@@ -1,0 +1,1174 @@
+{
+  "examTitle": "AZ-900 Practice Test (Unofficial)",
+  "description": "40 questions mirroring the AZ-900 domain weighting: Cloud Concepts (~25%), Azure Architecture & Services (~35%), Azure Management & Governance (~30%).",
+  "domains": {
+    "Cloud Concepts": "25%",
+    "Azure Architecture & Services": "35%",
+    "Azure Management & Governance": "30%"
+  },
+  "questionCount": 40,
+  "author": "Claude Sonnet 5",
+  "dateCreated": "2026-08-13",
+  "questions": [
+    {
+      "id": 1,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Which cloud model gives you the most control over the operating system and runtime, while the provider still manages the physical hardware?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "SaaS"
+        },
+        {
+          "letter": "B",
+          "text": "PaaS"
+        },
+        {
+          "letter": "C",
+          "text": "IaaS"
+        },
+        {
+          "letter": "D",
+          "text": "FaaS"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "IaaS: you manage OS, runtime, and apps; the provider manages physical infrastructure and virtualization.",
+      "timeSensitive": false
+    },
+    {
+      "id": 2,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Northline's IT Director Sandra wants predictable monthly spend and no upfront hardware purchases for a new distribution center. Which cloud benefit is she prioritizing?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Elasticity"
+        },
+        {
+          "letter": "B",
+          "text": "High availability"
+        },
+        {
+          "letter": "C",
+          "text": "CapEx to OpEx shift"
+        },
+        {
+          "letter": "D",
+          "text": "Fault tolerance"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "No upfront hardware purchase, predictable operational spend instead of capital expenditure.",
+      "timeSensitive": false
+    },
+    {
+      "id": 3,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "A company wants some workloads in Azure and some in their own datacenter, with the two connected and managed together. This is:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Multi-cloud"
+        },
+        {
+          "letter": "B",
+          "text": "Public cloud"
+        },
+        {
+          "letter": "C",
+          "text": "Hybrid cloud"
+        },
+        {
+          "letter": "D",
+          "text": "Private cloud"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "On-prem plus cloud, connected and managed together.",
+      "timeSensitive": false
+    },
+    {
+      "id": 4,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Which term describes a cloud's ability to automatically add or remove resources to match demand?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Scalability"
+        },
+        {
+          "letter": "B",
+          "text": "Elasticity"
+        },
+        {
+          "letter": "C",
+          "text": "Agility"
+        },
+        {
+          "letter": "D",
+          "text": "Redundancy"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Elasticity is automatic, demand-driven scale in/out. Scalability is the broader capability.",
+      "timeSensitive": false
+    },
+    {
+      "id": 5,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Vertical scaling (scaling up) means:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Adding more instances of a resource"
+        },
+        {
+          "letter": "B",
+          "text": "Increasing the size/power of an existing resource"
+        },
+        {
+          "letter": "C",
+          "text": "Distributing load across regions"
+        },
+        {
+          "letter": "D",
+          "text": "Adding a load balancer"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Vertical = bigger resource (e.g., larger VM SKU). Horizontal = more instances.",
+      "timeSensitive": false
+    },
+    {
+      "id": 6,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Which is a valid reason a company might choose a private cloud over public cloud?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Lower total cost of ownership"
+        },
+        {
+          "letter": "B",
+          "text": "No need to manage hardware"
+        },
+        {
+          "letter": "C",
+          "text": "Strict regulatory or data residency requirements"
+        },
+        {
+          "letter": "D",
+          "text": "Unlimited elasticity"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "Regulatory/data residency requirements are the classic private-cloud driver.",
+      "timeSensitive": false
+    },
+    {
+      "id": 7,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "SaaS shifts the MOST management responsibility to the cloud provider. Which of these is a SaaS example?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Virtual Machines"
+        },
+        {
+          "letter": "B",
+          "text": "Azure App Service"
+        },
+        {
+          "letter": "C",
+          "text": "Microsoft 365 / Exchange Online"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Kubernetes Service"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "Fully managed software; provider handles everything below the app layer.",
+      "timeSensitive": false
+    },
+    {
+      "id": 8,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "High availability primarily protects against:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Cost overruns"
+        },
+        {
+          "letter": "B",
+          "text": "Unplanned downtime"
+        },
+        {
+          "letter": "C",
+          "text": "Slow network throughput"
+        },
+        {
+          "letter": "D",
+          "text": "Unauthorized access"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "HA is about resilience to failures, not cost or security directly.",
+      "timeSensitive": false
+    },
+    {
+      "id": 9,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Which pricing model best describes paying only for the compute a VM actually consumes, per second/minute, with no long-term commitment?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Reserved Instance"
+        },
+        {
+          "letter": "B",
+          "text": "Spot pricing"
+        },
+        {
+          "letter": "C",
+          "text": "Pay-as-you-go"
+        },
+        {
+          "letter": "D",
+          "text": "Hybrid Benefit"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "No commitment, billed by consumption. Reserved Instances need a 1-3 year commitment; Spot is discounted but reclaimable.",
+      "timeSensitive": false
+    },
+    {
+      "id": 10,
+      "domain": "Cloud Concepts",
+      "type": "single",
+      "question": "Disaster recovery is best defined as:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Preventing all outages from occurring"
+        },
+        {
+          "letter": "B",
+          "text": "The process of restoring business operations after a disruptive event"
+        },
+        {
+          "letter": "C",
+          "text": "A synonym for high availability"
+        },
+        {
+          "letter": "D",
+          "text": "A backup taken once per year"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "DR is not prevention, and DR is not HA - HA avoids downtime, DR recovers from it.",
+      "timeSensitive": false
+    },
+    {
+      "id": 11,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "What is the relationship between Azure regions and availability zones?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Availability zones span multiple regions"
+        },
+        {
+          "letter": "B",
+          "text": "A region can contain multiple availability zones, each a physically separate datacenter with independent power/cooling/networking"
+        },
+        {
+          "letter": "C",
+          "text": "They are the same thing"
+        },
+        {
+          "letter": "D",
+          "text": "Availability zones are only used for storage, not compute"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Region = geography; Availability Zone = physically separate datacenter(s) within that region.",
+      "timeSensitive": false
+    },
+    {
+      "id": 12,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Northline's DR strategy uses a primary region and a secondary region hundreds of miles apart for failover. This pairing is an example of:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "An availability zone"
+        },
+        {
+          "letter": "B",
+          "text": "A region pair"
+        },
+        {
+          "letter": "C",
+          "text": "A resource group"
+        },
+        {
+          "letter": "D",
+          "text": "A management group"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Azure predefines region pairs for DR purposes; check Microsoft Learn for the current official pairing list for any specific regions.",
+      "timeSensitive": false
+    },
+    {
+      "id": 13,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Which Azure networking resource lets you segment a VNet and apply different security rules to different tiers (web, app, data)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Availability set"
+        },
+        {
+          "letter": "B",
+          "text": "Subnet"
+        },
+        {
+          "letter": "C",
+          "text": "Load balancer"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Bastion"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Subnets divide a VNet; NSGs then attach to subnets or NICs to enforce rules per tier.",
+      "timeSensitive": false
+    },
+    {
+      "id": 14,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "A Network Security Group (NSG) is functionally most similar to which on-prem concept?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A VLAN"
+        },
+        {
+          "letter": "B",
+          "text": "A DNS zone"
+        },
+        {
+          "letter": "C",
+          "text": "A firewall rule set applied to a subnet or NIC"
+        },
+        {
+          "letter": "D",
+          "text": "A domain controller"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "Allow/deny rules by port, protocol, source/destination, applied at subnet or NIC level.",
+      "timeSensitive": false
+    },
+    {
+      "id": 15,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Priya needs to connect Northline's Azure VNet to the two remaining warehouse closets over an encrypted tunnel across the public internet. What should she deploy?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure ExpressRoute"
+        },
+        {
+          "letter": "B",
+          "text": "VNet peering"
+        },
+        {
+          "letter": "C",
+          "text": "Site-to-site VPN Gateway"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Front Door"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "Encrypted tunnel between on-prem and Azure over the public internet. ExpressRoute is a private circuit, not an internet tunnel.",
+      "timeSensitive": false
+    },
+    {
+      "id": 16,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Which statement about VNet peering is correct?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "It requires traffic to route out over the public internet"
+        },
+        {
+          "letter": "B",
+          "text": "It connects two VNets and lets them communicate as if on the same network, typically using the Microsoft backbone"
+        },
+        {
+          "letter": "C",
+          "text": "It only works between VNets in the same region"
+        },
+        {
+          "letter": "D",
+          "text": "It replaces the need for NSGs"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "VNet peering connects VNets over Microsoft's backbone, not the public internet; NSGs still apply.",
+      "timeSensitive": false
+    },
+    {
+      "id": 17,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Which storage option is best for storing unstructured data like images, documents, and backups, accessed via REST/HTTP?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Files"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Blob Storage"
+        },
+        {
+          "letter": "C",
+          "text": "Azure SQL Database"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Table Storage"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Unstructured data over REST/HTTP, stored in containers as blobs.",
+      "timeSensitive": false
+    },
+    {
+      "id": 18,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Northline stores bills of lading as an SMB file share that on-prem apps map as a network drive. Which Azure service is the natural fit?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Blob Storage (Hot tier)"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Files"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Disk Storage"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Data Lake"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "SMB/NFS network shares that behave like a traditional mapped drive - the direct replacement.",
+      "timeSensitive": false
+    },
+    {
+      "id": 19,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Which blob storage tier is designed for data accessed rarely (roughly once a quarter or less) and tolerates a retrieval delay?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Hot"
+        },
+        {
+          "letter": "B",
+          "text": "Cool"
+        },
+        {
+          "letter": "C",
+          "text": "Archive"
+        },
+        {
+          "letter": "D",
+          "text": "Premium"
+        }
+      ],
+      "correctAnswers": [
+        "C"
+      ],
+      "explanation": "Lowest cost tier, but retrieval has latency (hours) - fits rare access.",
+      "timeSensitive": false
+    },
+    {
+      "id": 20,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "An 'availability set' for Azure VMs primarily protects against:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Regional disasters"
+        },
+        {
+          "letter": "B",
+          "text": "Hardware failures within a single datacenter, by spreading VMs across fault and update domains"
+        },
+        {
+          "letter": "C",
+          "text": "DDoS attacks"
+        },
+        {
+          "letter": "D",
+          "text": "Ransomware"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Availability sets spread VMs across fault domains (racks) and update domains (patch groups) within one datacenter.",
+      "timeSensitive": false
+    },
+    {
+      "id": 21,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "What's the main architectural difference between availability sets and availability zones?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "There is no difference"
+        },
+        {
+          "letter": "B",
+          "text": "Availability sets protect against rack/hardware failure in one datacenter; availability zones protect against the loss of an entire datacenter within a region"
+        },
+        {
+          "letter": "C",
+          "text": "Availability zones are cheaper"
+        },
+        {
+          "letter": "D",
+          "text": "Availability sets span regions"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Sets protect within one datacenter; Zones protect across separate datacenters in the region.",
+      "timeSensitive": false
+    },
+    {
+      "id": 22,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Which service would you use to run containerized applications at scale without managing the underlying VMs yourself (fully managed orchestration)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Container Instances"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Kubernetes Service (AKS)"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Virtual Machine Scale Sets"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Functions"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Fully managed Kubernetes control plane; you don't manage the orchestration layer yourself.",
+      "timeSensitive": false
+    },
+    {
+      "id": 23,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Azure Functions is best described as an example of:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "IaaS"
+        },
+        {
+          "letter": "B",
+          "text": "Serverless / Function-as-a-Service compute"
+        },
+        {
+          "letter": "C",
+          "text": "A networking service"
+        },
+        {
+          "letter": "D",
+          "text": "A storage tier"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Event-driven, no server management, billed by execution.",
+      "timeSensitive": false
+    },
+    {
+      "id": 24,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Which Azure service resolves domain names for resources within a VNet and can also host public DNS zones?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Traffic Manager"
+        },
+        {
+          "letter": "B",
+          "text": "Azure DNS"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Front Door"
+        },
+        {
+          "letter": "D",
+          "text": "Azure ExpressRoute"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Hosts public DNS zones and provides name resolution; private DNS zones handle internal VNet resolution.",
+      "timeSensitive": false
+    },
+    {
+      "id": 25,
+      "domain": "Azure Architecture & Services",
+      "type": "single",
+      "question": "Northline hasn't migrated their SQL Server VM to a managed database yet. What's the main tradeoff of staying on a SQL Server VM (IaaS) instead of moving to Azure SQL Database (PaaS)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "IaaS is always cheaper"
+        },
+        {
+          "letter": "B",
+          "text": "On the VM, Northline still manages OS patching, SQL Server updates, and backups themselves; PaaS offloads that to Microsoft"
+        },
+        {
+          "letter": "C",
+          "text": "PaaS doesn't support SQL Server workloads"
+        },
+        {
+          "letter": "D",
+          "text": "There is no real difference"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "IaaS keeps patching/backup/HA responsibility on you; PaaS offloads much of that to Microsoft.",
+      "timeSensitive": false
+    },
+    {
+      "id": 26,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which Azure service is the identity backbone for Microsoft 365 and Azure resource access, replacing (in the cloud) what an on-prem AD domain controller does?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Policy"
+        },
+        {
+          "letter": "B",
+          "text": "Entra ID (Azure AD)"
+        },
+        {
+          "letter": "C",
+          "text": "Azure RBAC"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Key Vault"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Cloud identity provider - the AAD Connect-synced counterpart to on-prem AD. Note: Microsoft rebranded Azure Active Directory to Microsoft Entra ID; double-check current docs for the latest terminology.",
+      "timeSensitive": true
+    },
+    {
+      "id": 27,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Azure AD Connect's (Microsoft Entra Connect's) primary job is to:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Encrypt VPN traffic"
+        },
+        {
+          "letter": "B",
+          "text": "Synchronize identities between on-prem Active Directory and Entra ID"
+        },
+        {
+          "letter": "C",
+          "text": "Enforce Conditional Access policies"
+        },
+        {
+          "letter": "D",
+          "text": "Manage billing alerts"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Syncs on-prem AD objects/password hashes (or federates) to Entra ID. Note: Azure AD Connect was rebranded to Microsoft Entra Connect Sync; verify current naming on Microsoft Learn.",
+      "timeSensitive": true
+    },
+    {
+      "id": 28,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "A warehouse manager's account has standing Global Administrator access with no MFA. Which Entra ID feature would let you require MFA and device compliance specifically when someone tries to use privileged roles?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Policy"
+        },
+        {
+          "letter": "B",
+          "text": "Conditional Access"
+        },
+        {
+          "letter": "C",
+          "text": "Resource locks"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Blueprints"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Policy-based access control - 'if this role/user/location, then require MFA/compliant device.'",
+      "timeSensitive": false
+    },
+    {
+      "id": 29,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Azure RBAC (role-based access control) primarily controls:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Which network ports are open"
+        },
+        {
+          "letter": "B",
+          "text": "Who can perform which actions on which Azure resources, scoped to subscription/resource group/resource"
+        },
+        {
+          "letter": "C",
+          "text": "Password complexity requirements"
+        },
+        {
+          "letter": "D",
+          "text": "VM disk encryption"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "RBAC = who can do what, where, on Azure resources.",
+      "timeSensitive": false
+    },
+    {
+      "id": 30,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which RBAC scope hierarchy is correct, from broadest to narrowest?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Resource -> Resource Group -> Subscription -> Management Group"
+        },
+        {
+          "letter": "B",
+          "text": "Management Group -> Subscription -> Resource Group -> Resource"
+        },
+        {
+          "letter": "C",
+          "text": "Subscription -> Management Group -> Resource -> Resource Group"
+        },
+        {
+          "letter": "D",
+          "text": "Resource Group -> Management Group -> Subscription -> Resource"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Management Group is broadest, Resource is narrowest.",
+      "timeSensitive": false
+    },
+    {
+      "id": 31,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Sandra wants every resource tagged with a department and cost center, and wants non-compliant resources flagged automatically. Which service enforces that?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Monitor"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Policy"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Service Health"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Enforces rules like 'require a tag' or 'deny resource type' - configuration/compliance governance, not identity.",
+      "timeSensitive": false
+    },
+    {
+      "id": 32,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "What's the difference between Azure Policy and Azure RBAC?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "They're the same thing"
+        },
+        {
+          "letter": "B",
+          "text": "RBAC controls who can do what; Policy controls what configurations/resources are allowed, regardless of who's making the request"
+        },
+        {
+          "letter": "C",
+          "text": "Policy controls identity; RBAC controls cost"
+        },
+        {
+          "letter": "D",
+          "text": "RBAC is for networking only"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "RBAC = access. Policy = configuration/compliance rules.",
+      "timeSensitive": false
+    },
+    {
+      "id": 33,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which tool would Sandra use to set a monthly spending threshold and get alerted before Northline blows past it?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "B",
+          "text": "Cost Management + Budgets"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Monitor"
+        },
+        {
+          "letter": "D",
+          "text": "Service Health"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Set thresholds, get alerts before/at spend limits.",
+      "timeSensitive": false
+    },
+    {
+      "id": 34,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Resource groups in Azure are best described as:",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A billing-only construct with no effect on resources"
+        },
+        {
+          "letter": "B",
+          "text": "A logical container for resources that share the same lifecycle, often deployed and deleted together"
+        },
+        {
+          "letter": "C",
+          "text": "The same thing as a subscription"
+        },
+        {
+          "letter": "D",
+          "text": "A networking boundary equivalent to a VLAN"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Resource groups group resources that share a lifecycle - not a network or billing-only construct.",
+      "timeSensitive": false
+    },
+    {
+      "id": 35,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which service gives Northline recommendations on cost savings, security, reliability, and performance based on actual resource usage?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Policy"
+        },
+        {
+          "letter": "C",
+          "text": "Log Analytics"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Blueprints"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Personalized recommendations across cost, security, reliability, performance, operational excellence.",
+      "timeSensitive": false
+    },
+    {
+      "id": 36,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Marcus wants to deploy infrastructure consistently and repeatably using code instead of manual portal clicks. Which category of tool is he using?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Monitor"
+        },
+        {
+          "letter": "B",
+          "text": "Infrastructure as Code (e.g., ARM templates, Bicep)"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "D",
+          "text": "Conditional Access"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Declarative, repeatable deployments instead of manual portal work.",
+      "timeSensitive": false
+    },
+    {
+      "id": 37,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which describes the Azure Service Level Agreement (SLA)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A guarantee that no outage will ever occur"
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft's commitment to a level of uptime/performance for a service, with defined compensation (service credits) if not met"
+        },
+        {
+          "letter": "C",
+          "text": "A free support ticket"
+        },
+        {
+          "letter": "D",
+          "text": "A backup policy"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "SLA = uptime/performance commitment with service credits for missing it - not a zero-downtime guarantee.",
+      "timeSensitive": false
+    },
+    {
+      "id": 38,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which Azure Monitor component collects and lets you query log and performance data using a query language (KQL)?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Activity Log"
+        },
+        {
+          "letter": "B",
+          "text": "Log Analytics"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "D",
+          "text": "Resource Health"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Query engine (KQL) over collected logs and metrics.",
+      "timeSensitive": false
+    },
+    {
+      "id": 39,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "What's the difference between the Activity Log and a resource log (diagnostic log) in Azure Monitor?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "There is no difference"
+        },
+        {
+          "letter": "B",
+          "text": "Activity Log records subscription-level operations (who created/deleted/modified a resource); resource logs record what happens inside a resource (e.g., VM performance, storage requests)"
+        },
+        {
+          "letter": "C",
+          "text": "Resource logs only track billing"
+        },
+        {
+          "letter": "D",
+          "text": "Activity Log is for networking only"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Activity Log = control-plane/management operations. Resource/diagnostic logs = data-plane detail from inside the resource.",
+      "timeSensitive": false
+    },
+    {
+      "id": 40,
+      "domain": "Azure Management & Governance",
+      "type": "single",
+      "question": "Which compliance/governance resource lets Microsoft customers review audit reports and certifications (ISO, SOC, etc.) for Azure services?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "B",
+          "text": "Microsoft Trust Center / Service Trust Portal"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Policy"
+        },
+        {
+          "letter": "D",
+          "text": "Resource Health"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Where compliance certifications and audit reports live.",
+      "timeSensitive": false
+    }
+  ]
+}

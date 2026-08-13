@@ -1,0 +1,12 @@
+{
+  "exams": [
+    {
+      "file": "az900-practice-exam.json",
+      "label": "AZ-900 Practice Exam"
+    },
+    {
+      "file": "az900-practice-test2.json",
+      "label": "AZ-900 Practice Test (Unofficial)"
+    }
+  ]
+}
