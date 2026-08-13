@@ -65,7 +65,7 @@
 
 /* -------- layout -------- */
 .exam-main {
-  max-width: 720px;
+  max-width: var(--tools-content-width);
   margin: 0 auto;
   padding: 32px 20px 80px;
 }
@@ -159,8 +159,8 @@
   margin-top: 10px;
   font-size: 12px;
   color: var(--tools-danger);
-  background: rgba(226, 88, 79, 0.1);
-  border: 1px solid rgba(226, 88, 79, 0.3);
+  background: color-mix(in srgb, var(--tools-danger) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tools-danger) 30%, transparent);
   border-radius: 6px;
   padding: 10px 12px;
 }
@@ -277,7 +277,7 @@
 .exam-mode-btn:hover { border-color: var(--tools-accent); }
 .exam-mode-btn--selected {
   border-color: var(--tools-accent);
-  background: rgba(79, 214, 196, 0.08);
+  background: color-mix(in srgb, var(--tools-accent) 8%, transparent);
 }
 
 .exam-mode-btn-title { font-size: 13px; font-weight: 600; }
@@ -286,8 +286,8 @@
 .exam-error {
   font-size: 12px;
   color: var(--tools-danger);
-  background: rgba(226, 88, 79, 0.1);
-  border: 1px solid rgba(226, 88, 79, 0.3);
+  background: color-mix(in srgb, var(--tools-danger) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tools-danger) 30%, transparent);
   border-radius: 6px;
   padding: 10px 12px;
   margin-bottom: 16px;
@@ -312,7 +312,7 @@
 .exam-btn--primary {
   background: var(--tools-accent);
   border-color: var(--tools-accent);
-  color: #0b1015;
+  color: var(--tools-accent-contrast);
 }
 .exam-btn--primary:hover:not(:disabled) { opacity: 0.9; border-color: var(--tools-accent); }
 
@@ -369,8 +369,8 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--tools-warn);
-  background: rgba(232, 169, 76, 0.12);
-  border: 1px solid rgba(232, 169, 76, 0.35);
+  background: color-mix(in srgb, var(--tools-warn) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tools-warn) 35%, transparent);
   border-radius: 4px;
   padding: 3px 8px;
   margin-bottom: 14px;
@@ -404,17 +404,17 @@
 
 .exam-option--selected {
   border-color: var(--tools-accent);
-  background: rgba(79, 214, 196, 0.08);
+  background: color-mix(in srgb, var(--tools-accent) 8%, transparent);
 }
 
 .exam-option--correct {
   border-color: var(--tools-ok);
-  background: rgba(63, 214, 138, 0.1);
+  background: color-mix(in srgb, var(--tools-ok) 10%, transparent);
 }
 
 .exam-option--incorrect {
   border-color: var(--tools-danger);
-  background: rgba(226, 88, 79, 0.1);
+  background: color-mix(in srgb, var(--tools-danger) 10%, transparent);
 }
 
 .exam-option--locked { cursor: default; }

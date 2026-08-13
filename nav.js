@@ -12,6 +12,7 @@
       label: "Exam",
       href: "/tools/Exam/",
       description: "Run a practice exam from a JSON question bank, in study or test mode.",
+      category: "Education",
     },
     {
       id: "income-calculator-simple",
@@ -31,6 +32,35 @@
 
   window.ToolsRegistry = TOOLS;
 
+  // ---------- theme ----------
+  // theme-init.js (loaded synchronously in <head>, before first paint) has
+  // already applied any saved preference as a data-theme attribute on
+  // <html>. This just needs to keep that in sync as the user toggles.
+  var THEME_KEY = "tools-theme";
+
+  function getTheme() {
+    return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+      /* ignore (private browsing / storage disabled) */
+    }
+    updateThemeToggleButton();
+  }
+
+  function updateThemeToggleButton() {
+    var btn = document.getElementById("tools-theme-toggle");
+    if (!btn) return;
+    var theme = getTheme();
+    btn.textContent = theme === "light" ? "☀ Light" : "☾ Dark";
+    btn.setAttribute("aria-label", "Switch to " + (theme === "light" ? "dark" : "light") + " theme");
+    btn.title = btn.getAttribute("aria-label");
+  }
+
   function renderNav() {
     var root = document.getElementById("tools-nav-root");
     if (!root) return;
@@ -46,7 +76,13 @@
       '<nav class="tools-nav">' +
       '<a class="tools-nav-title" href="/">Tools</a>' +
       '<div class="tools-nav-links">' + links + "</div>" +
+      '<button type="button" class="tools-theme-toggle" id="tools-theme-toggle"></button>' +
       "</nav>";
+
+    updateThemeToggleButton();
+    document.getElementById("tools-theme-toggle").addEventListener("click", function () {
+      setTheme(getTheme() === "light" ? "dark" : "light");
+    });
   }
 
   if (document.readyState === "loading") {

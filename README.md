@@ -45,34 +45,78 @@ upload feature to save files to `tools/Exam/exams/` (see below).
   nest them under a category folder instead:
   `tools/<Category>/<ToolName>/index.html`, as with
   `tools/Finance/IncomeCalculatorSimple/`.
-- Each tool is free to bring its own visual design (fonts, colors, layout)
-  rather than conform to the dark ops-console look — the universal nav bar
-  is the only thing guaranteed to look the same everywhere. If a tool's
-  own styles clash with something global.css applies site-wide (e.g. the
-  shared focus-ring color), override it locally in the tool's own
-  stylesheet rather than changing global.css.
+- Every tool shares one visual design via the `--tools-*` custom properties
+  defined in `global.css` (see "Theming" below) — a tool's own `styles.css`
+  should style layout/components using those tokens, not introduce its own
+  color palette or font stack. This is what lets the whole site (nav bar
+  included) respond consistently to the light/dark toggle.
 
 ### Adding a new tool
 
 1. Create `tools/<ToolName>/index.html` (or `tools/<Category>/<ToolName>/index.html`
    if it belongs to a group) with `<body data-tool="<id>">`, a
-   `<div id="tools-nav-root"></div>` right after `<body>`, and
-   `<link rel="stylesheet" href="/global.css">` before the tool's own
-   stylesheet. Load `<script src="/nav.js"></script>` before the tool's
-   own script. Also include the IBM Plex Mono Google Fonts `<link>` tags
-   (copy them from `tools/Exam/index.html`) even if the tool's own design
-   uses a different font — the nav bar's font-family is pinned to IBM Plex
-   Mono in `global.css`, but the font still has to be loaded on every page
-   for it to actually render that way instead of falling back to a system
-   mono font.
+   `<div id="tools-nav-root"></div>` right after `<body>`, and, in this
+   order in `<head>`: `<script src="/theme-init.js"></script>` (must run
+   before any CSS paints — see "Theming"), the IBM Plex Mono Google Fonts
+   `<link>` tags (copy from `tools/Exam/index.html` — the nav bar's font is
+   pinned to IBM Plex Mono in `global.css`, but the font still has to be
+   loaded on every page for that to actually render instead of falling
+   back to a system mono font), then `<link rel="stylesheet" href="/global.css">`
+   before the tool's own stylesheet. Load `<script src="/nav.js"></script>`
+   before the tool's own script.
 2. Give the tool its own `app.js` / `styles.css` inside its folder —
    plain relative filenames are fine since the folder is the namespace.
+   Style it using `var(--tools-*)` tokens (see "Theming") rather than
+   hardcoded colors, so it inherits the site's light/dark toggle for free.
 3. Add an entry to the `TOOLS` array in `nav.js` (`id`, `label`,
    `href: "/tools/<ToolName>/"`, `description`). If it belongs to a group
    of related tools, add a matching `category` string (e.g. `"Finance"`)
    to each entry in that group — the landing page groups cards under a
    heading per category automatically; the nav bar itself stays a flat
    list regardless.
+
+## Theming
+
+The whole site — nav bar and every tool — shares one set of design tokens
+defined as CSS custom properties in `global.css`:
+
+```
+--tools-bg, --tools-panel, --tools-panel-alt, --tools-line, --tools-text,
+--tools-muted, --tools-ok, --tools-warn, --tools-info, --tools-danger,
+--tools-idle, --tools-accent, --tools-accent-contrast, --tools-mono,
+--tools-content-width
+```
+
+`--tools-content-width` (960px) is the shared max-width for each page's
+main content wrapper — the landing grid's `.tools-home-main`, Exam's
+`.exam-main`, and each Finance tool's `.wrap`. Use it there rather than a
+one-off pixel value, so the page doesn't visibly change width as you
+navigate between tools.
+
+Dark is the default palette, defined on bare `:root`. A full light palette
+is defined under `:root[data-theme="light"]`, which activates when
+`<html>` has that attribute. There's no `prefers-color-scheme` media query
+involved — this is a manual toggle, not a system-preference follower.
+
+`--tools-accent-contrast` is paired with `--tools-accent`: use it for text
+that sits on top of a solid `--tools-accent` fill (e.g. a primary button).
+The two are defined together per-theme because dark mode's accent is
+bright enough for dark text on it, while light mode's accent is darkened
+for contrast against a white page — so it needs light text instead.
+
+For translucent color washes (a faint tinted background behind a colored
+border), use `color-mix(in srgb, var(--tools-X) N%, transparent)` rather
+than a hardcoded `rgba(...)` — a literal rgba value bakes in one theme's
+hex value and won't adapt when the palette switches.
+
+**Avoiding a flash of the wrong theme:** `theme-init.js` reads the saved
+preference from `localStorage` (`tools-theme`) and sets `data-theme` on
+`<html>` before any stylesheet paints. It must be loaded as a classic
+(non-deferred, non-async) `<script src>` early in `<head>`, before the
+page can render — that's why every page's `<head>` includes it ahead of
+the stylesheet links. `nav.js` renders the actual toggle button (in the
+universal nav bar) and keeps `localStorage` in sync as the user clicks it;
+`theme-init.js` only handles the initial paint.
 
 ## Adding an exam
 

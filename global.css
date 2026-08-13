@@ -3,6 +3,9 @@
    universal top nav bar, and the Tools landing page layout.
    ============================================================ */
 
+/* Dark is the default (bare :root, no media query) — this site is a manual
+   toggle, not a prefers-color-scheme follower. :root[data-theme="light"]
+   below overrides every token for the light variant. */
 :root {
   --tools-bg: #12181f;
   --tools-panel: #19212b;
@@ -16,6 +19,34 @@
   --tools-danger: #e2584f;
   --tools-idle: #4a5563;
   --tools-accent: #4fd6c4;
+  /* Text color to use ON TOP of a solid --tools-accent surface (e.g. a
+     primary button fill). Paired with --tools-accent because the two need
+     to invert together: dark mode's accent is bright enough for dark text;
+     light mode's accent is darkened for contrast against a white page, so
+     it needs light text instead. */
+  --tools-accent-contrast: #0b1015;
+  --tools-mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  /* Shared content-column width — every page's main wrapper (the landing
+     grid, .exam-main, each Finance tool's .wrap) reads this instead of
+     hardcoding its own, so the page doesn't visibly change width as you
+     navigate between tools. */
+  --tools-content-width: 960px;
+}
+
+:root[data-theme="light"] {
+  --tools-bg: #f5f7f9;
+  --tools-panel: #ffffff;
+  --tools-panel-alt: #eceff2;
+  --tools-line: #d7dde3;
+  --tools-text: #16202b;
+  --tools-muted: #5b6b7a;
+  --tools-ok: #1a8f53;
+  --tools-warn: #a8690d;
+  --tools-info: #1f6fb0;
+  --tools-danger: #c23f35;
+  --tools-idle: #aab4bd;
+  --tools-accent: #0f8f7e;
+  --tools-accent-contrast: #ffffff;
 }
 
 * {
@@ -26,7 +57,7 @@ body {
   margin: 0;
   background: var(--tools-bg);
   color: var(--tools-text);
-  font-family: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  font-family: var(--tools-mono);
 }
 
 a {
@@ -59,7 +90,29 @@ input:focus-visible,
   background: var(--tools-panel);
   /* Set explicitly (not inherited from body) so a tool's own font-family
      override on body can't change how the universal nav renders. */
-  font-family: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  font-family: var(--tools-mono);
+}
+
+.tools-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tools-muted);
+  background: transparent;
+  border: 1px solid var(--tools-line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.tools-theme-toggle:hover {
+  color: var(--tools-text);
+  border-color: var(--tools-accent);
 }
 
 .tools-nav-title {
@@ -88,7 +141,7 @@ input:focus-visible,
   align-items: center;
   gap: 4px;
   list-style: none;
-  margin: 0;
+  margin: 0 auto 0 0;
   padding: 0;
 }
 
@@ -115,7 +168,7 @@ input:focus-visible,
 
 /* -------- landing page -------- */
 .tools-home-main {
-  max-width: 880px;
+  max-width: var(--tools-content-width);
   margin: 0 auto;
   padding: 48px 20px 80px;
 }
