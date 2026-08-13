@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Income Calculator (Simple) · Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/global.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-tool="income-calculator-simple">
+
+<div id="tools-nav-root"></div>
+
+<div class="masthead">
+  <p class="eyebrow">Ledger No. 02 · Compensation, with real brackets</p>
+  <h1>Pay Ledger</h1>
+  <p>Enter a salary or an hourly rate — the other side balances itself. Federal tax is computed through the actual 2026 IRS brackets for your filing status, state tax uses your state's real rate structure, and FICA follows the current Social Security wage base.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- BALANCE -->
+  <div class="balance">
+    <div class="account">
+      <div class="label">Annual Salary <span class="tag">Gross</span></div>
+      <div class="amount-row"><span class="prefix">$</span><input type="text" id="salaryInput" inputmode="decimal" value="65,000"></div>
+      <div class="suffix">/ year</div>
+    </div>
+    <div class="beam-wrap"><div class="beam" id="beam">=</div></div>
+    <div class="account">
+      <div class="label">Hourly Rate <span class="tag">Gross</span></div>
+      <div class="amount-row"><span class="prefix">$</span><input type="text" id="hourlyInput" inputmode="decimal" value="31.25"></div>
+      <div class="suffix">/ hour</div>
+    </div>
+  </div>
+
+  <!-- SCHEDULE -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§1</span>Work Schedule</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <p class="section-sub">Used to convert between salary and hourly rate. "Paid weeks" below 52 models unpaid time off.</p>
+      <div class="field-grid">
+        <div class="field"><label for="hoursPerWeek">Hours / week</label><input type="number" id="hoursPerWeek" value="40" min="1" max="168" step="0.5"></div>
+        <div class="field"><label for="daysPerWeek">Work days / week</label><input type="number" id="daysPerWeek" value="5" min="1" max="7" step="1"></div>
+        <div class="field"><label for="weeksPerYear">Paid weeks / year</label><input type="number" id="weeksPerYear" value="52" min="1" max="52" step="0.5"></div>
+      </div>
+      <p class="section-sub" style="margin-top:10px;">Note: Weekly / biweekly / semi‑monthly / monthly figures below assume your annual pay is spread evenly across a standard 52‑week calendar year — they'll stay internally consistent with each other even if "paid weeks" is reduced. Hourly and daily figures reflect the rate you actually earn while working.</p>
+    </div>
+  </details>
+
+  <!-- FILING -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§2</span>Filing Status &amp; Location</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <div class="field-grid">
+        <div class="field">
+          <label for="filingStatus">Filing status</label>
+          <select id="filingStatus">
+            <option value="single" selected>Single</option>
+            <option value="mfj">Married filing jointly</option>
+            <option value="hoh">Head of household</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="stateSelect">State</label>
+          <select id="stateSelect"></select>
+        </div>
+      </div>
+      <div class="row-toggle">
+        <div class="switch" id="seniorSwitch"><div class="knob"></div></div>
+        <label id="seniorLabel">Add additional 65+ standard deduction</label>
+      </div>
+    </div>
+  </details>
+
+  <!-- BREAKDOWN -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§3</span>Pay Breakdown</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <table class="ledger-table">
+        <thead><tr><th>Period</th><th>Gross</th><th>Net (take‑home)</th></tr></thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+
+      <div class="tax-detail" id="taxDetail"></div>
+      <div class="warn-banner" id="warnBanner" style="display:none;"></div>
+    </div>
+  </details>
+
+  <!-- DEDUCTIONS -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§4</span>Deductions</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <p class="section-sub">Retirement and Health/HSA contributions are modeled pre‑tax (they reduce your federal &amp; state taxable income; Health/HSA also reduce FICA wages). "Other" is post‑tax.</p>
+      <div class="ded-row"><div class="name">Retirement (401k / IRA)</div><input type="number" id="retPct" value="5" step="0.1"><div class="unit">%</div></div>
+      <div class="ded-row"><div class="name">Health insurance</div><input type="number" id="healthAnnual" value="2400" step="10"><div class="unit">$/yr</div></div>
+      <div class="ded-row"><div class="name">HSA / FSA</div><input type="number" id="hsaAnnual" value="0" step="10"><div class="unit">$/yr</div></div>
+      <div class="ded-row"><div class="name">Other (post‑tax)</div><input type="number" id="otherAnnual" value="0" step="10"><div class="unit">$/yr</div></div>
+      <div class="ded-row"><div class="name">Social Security wage base</div><input type="number" id="ssWageBase" value="184500" step="100"><div class="unit">$</div></div>
+
+      <div class="row-toggle" style="margin-top:16px;">
+        <div class="switch" id="overrideSwitch"><div class="knob"></div></div>
+        <label id="overrideLabel">Override with my own flat federal/state rates</label>
+      </div>
+      <div id="overrideFields" style="display:none;">
+        <div class="field-grid">
+          <div class="field"><label for="fedOverridePct">Federal rate</label><input type="number" id="fedOverridePct" value="12" step="0.1"></div>
+          <div class="field"><label for="stateOverridePct">State rate</label><input type="number" id="stateOverridePct" value="4" step="0.1"></div>
+        </div>
+        <p class="section-sub">FICA is still calculated automatically from current law — only federal and state income tax are overridden.</p>
+      </div>
+    </div>
+  </details>
+
+  <!-- OVERTIME -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§5</span>Overtime</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <div class="row-toggle">
+        <div class="switch" id="otSwitch"><div class="knob"></div></div>
+        <label id="otLabel">Include overtime pay</label>
+      </div>
+      <div id="otFields" style="display:none;">
+        <div class="field-grid">
+          <div class="field"><label for="otHours">Overtime hours / week</label><input type="number" id="otHours" value="5" min="0" step="0.5"></div>
+          <div class="field">
+            <label for="otMultiplier">Multiplier</label>
+            <select id="otMultiplier">
+              <option value="1.5" selected>1.5× (time and a half)</option>
+              <option value="2">2× (double time)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row-toggle">
+          <div class="switch" id="otIncludeSwitch"><div class="knob"></div></div>
+          <label id="otIncludeLabel">Fold overtime into the Pay Breakdown &amp; tax totals above</label>
+        </div>
+        <div class="pto-cards">
+          <div class="pto-card"><div class="lab">Extra weekly pay</div><div class="val" id="otWeekly">$0</div></div>
+          <div class="pto-card"><div class="lab">Extra annual pay</div><div class="val" id="otAnnual">$0</div></div>
+          <div class="pto-card"><div class="lab">New effective annual (gross)</div><div class="val" id="otNewAnnual">$0</div></div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- COMPARATOR -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§6</span>Offer Comparator</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <p class="section-sub">Compare two offers using the schedule, filing status, state and deductions set above.</p>
+      <div class="cmp-grid">
+        <div class="cmp-card">
+          <h4>Offer A</h4>
+          <div class="field-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="field"><label for="cmpAType">Type</label>
+              <select id="cmpAType"><option value="salary" selected>Annual salary</option><option value="hourly">Hourly rate</option></select>
+            </div>
+            <div class="field"><label for="cmpAVal">Amount</label><input type="number" id="cmpAVal" value="65000" step="100"></div>
+          </div>
+        </div>
+        <div class="cmp-card">
+          <h4>Offer B</h4>
+          <div class="field-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="field"><label for="cmpBType">Type</label>
+              <select id="cmpBType"><option value="salary" selected>Annual salary</option><option value="hourly">Hourly rate</option></select>
+            </div>
+            <div class="field"><label for="cmpBVal">Amount</label><input type="number" id="cmpBVal" value="70000" step="100"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-result" id="cmpResult">
+        <div class="big" id="cmpBig">+$5,000</div>
+        <div class="sub" id="cmpSub"></div>
+        <div class="sub2" id="cmpSub2"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- PTO -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§7</span>Time Off Value</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <p class="section-sub">What a day is worth — and what it costs to take one unpaid.</p>
+      <div class="field-grid">
+        <div class="field"><label for="ptoDays">PTO days / year</label><input type="number" id="ptoDays" value="15" min="0" step="1"></div>
+      </div>
+      <div class="pto-cards">
+        <div class="pto-card"><div class="lab">Value of one day off (gross)</div><div class="val" id="dayValue">$0</div></div>
+        <div class="pto-card"><div class="lab">Total annual PTO value (gross)</div><div class="val" id="ptoValue">$0</div></div>
+        <div class="pto-card"><div class="lab">Cost of one unpaid day off (net)</div><div class="val" id="unpaidCost">$0</div></div>
+      </div>
+    </div>
+  </details>
+
+  <div class="footer-bar">
+    <div>
+      <button class="btn primary" id="saveBtn">Save settings</button>
+      <button class="btn" id="resetBtn">Reset to defaults</button>
+    </div>
+    <div class="save-note" id="saveNote">Not yet saved this browser.</div>
+  </div>
+
+  <div class="disclaimer">
+    <b>This is an estimate, not tax advice.</b> Federal figures use 2026 IRS brackets and standard deductions (Rev. Proc. 2025‑32). State figures use each state's published 2026 rate structure but are simplified — they don't account for local/city income taxes, tax credits, itemized deductions, phase‑outs, or state‑specific quirks (e.g. California's SDI payroll tax, Washington's capital‑gains‑only tax). Head‑of‑household state brackets are approximated using each state's single‑filer brackets, since most states don't publish a separate HoH table. Verify against your state's department of revenue for anything that matters.
+  </div>
+
+</div>
+
+<script src="/nav.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

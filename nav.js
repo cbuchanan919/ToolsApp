@@ -11,6 +11,12 @@
       href: "/tools/Exam/",
       description: "Run a practice exam from a JSON question bank, in study or test mode.",
     },
+    {
+      id: "income-calculator-simple",
+      label: "Income Calculator (Simple)",
+      href: "/tools/Finance/IncomeCalculatorSimple/",
+      description: "Convert between salary and hourly pay, with real federal/state tax brackets and take-home breakdowns.",
+    },
   ];
 
   window.ToolsRegistry = TOOLS;

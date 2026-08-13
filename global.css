@@ -57,6 +57,9 @@ input:focus-visible,
   padding: 14px 20px;
   border-bottom: 1px solid var(--tools-line);
   background: var(--tools-panel);
+  /* Set explicitly (not inherited from body) so a tool's own font-family
+     override on body can't change how the universal nav renders. */
+  font-family: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
 }
 
 .tools-nav-title {

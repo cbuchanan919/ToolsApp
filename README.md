@@ -6,6 +6,11 @@ shared "Tools" landing page and top nav bar. Currently:
 - **Exam** (`tools/Exam/`) — a practice exam runner. Load a bank of
   multiple-choice questions, take it in **study** mode (instant feedback) or
   **test** mode (scored at the end), and review results by domain.
+- **Income Calculator (Simple)** (`tools/Finance/IncomeCalculatorSimple/`) —
+  converts between salary and hourly pay using real federal/state tax
+  brackets, with a pay breakdown, offer comparator, and PTO value calculator.
+  `tools/Finance/` is a category folder — expect sibling calculators
+  (e.g. a multi-person version) alongside it later.
 
 ## Running it
 
@@ -31,14 +36,30 @@ upload feature to save files to `tools/Exam/exams/` (see below).
 - `tools/<ToolName>/` — one folder per tool, e.g. `tools/Exam/index.html`,
   `app.js`, `styles.css`, plus any tool-owned data (`tools/Exam/exams/`).
   The folder is the namespace, so tool-owned files don't need prefixing.
+  When a group of tools are related (e.g. multiple finance calculators),
+  nest them under a category folder instead:
+  `tools/<Category>/<ToolName>/index.html`, as with
+  `tools/Finance/IncomeCalculatorSimple/`.
+- Each tool is free to bring its own visual design (fonts, colors, layout)
+  rather than conform to the dark ops-console look — the universal nav bar
+  is the only thing guaranteed to look the same everywhere. If a tool's
+  own styles clash with something global.css applies site-wide (e.g. the
+  shared focus-ring color), override it locally in the tool's own
+  stylesheet rather than changing global.css.
 
 ### Adding a new tool
 
-1. Create `tools/<ToolName>/index.html` with `<body data-tool="<id>">`, a
+1. Create `tools/<ToolName>/index.html` (or `tools/<Category>/<ToolName>/index.html`
+   if it belongs to a group) with `<body data-tool="<id>">`, a
    `<div id="tools-nav-root"></div>` right after `<body>`, and
    `<link rel="stylesheet" href="/global.css">` before the tool's own
    stylesheet. Load `<script src="/nav.js"></script>` before the tool's
-   own script.
+   own script. Also include the IBM Plex Mono Google Fonts `<link>` tags
+   (copy them from `tools/Exam/index.html`) even if the tool's own design
+   uses a different font — the nav bar's font-family is pinned to IBM Plex
+   Mono in `global.css`, but the font still has to be loaded on every page
+   for it to actually render that way instead of falling back to a system
+   mono font.
 2. Give the tool its own `app.js` / `styles.css` inside its folder —
    plain relative filenames are fine since the folder is the namespace.
 3. Add an entry to the `TOOLS` array in `nav.js` (`id`, `label`,
