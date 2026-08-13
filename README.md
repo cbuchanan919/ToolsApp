@@ -1,8 +1,11 @@
-# Practice Exam Console
+# Tools
 
-A local, single-page practice exam runner. Load a bank of multiple-choice
-questions, take it in **study** mode (instant feedback) or **test** mode
-(scored at the end), and review results by domain.
+A local, static site hosting a small suite of single-page tools, behind a
+shared "Tools" landing page and top nav bar. Currently:
+
+- **Exam** (`tools/Exam/`) — a practice exam runner. Load a bank of
+  multiple-choice questions, take it in **study** mode (instant feedback) or
+  **test** mode (scored at the end), and review results by domain.
 
 ## Running it
 
@@ -12,12 +15,39 @@ python serve.py 8080       # custom port
 ```
 
 Standard library only — no pip installs required. Run it with `serve.py`
-rather than `python -m http.server` if you want the in-app upload feature to
-save files to `exams/` (see below).
+rather than `python -m http.server` if you want the exam tool's in-app
+upload feature to save files to `tools/Exam/exams/` (see below).
+
+## Site structure
+
+- `index.html` / `global.css` — the Tools landing page: shared design
+  tokens, the universal nav bar, and a card grid linking to each tool.
+- `nav.js` — single source of truth for the tools registry (id, label,
+  href, description). Injects the nav bar into any page with a
+  `<div id="tools-nav-root"></div>`, and the landing page reads the same
+  registry to render its card grid. Shared assets (`global.css`, `nav.js`)
+  are referenced with root-absolute paths (`/global.css`, `/nav.js`) so
+  they resolve correctly no matter how deep a tool's folder is nested.
+- `tools/<ToolName>/` — one folder per tool, e.g. `tools/Exam/index.html`,
+  `app.js`, `styles.css`, plus any tool-owned data (`tools/Exam/exams/`).
+  The folder is the namespace, so tool-owned files don't need prefixing.
+
+### Adding a new tool
+
+1. Create `tools/<ToolName>/index.html` with `<body data-tool="<id>">`, a
+   `<div id="tools-nav-root"></div>` right after `<body>`, and
+   `<link rel="stylesheet" href="/global.css">` before the tool's own
+   stylesheet. Load `<script src="/nav.js"></script>` before the tool's
+   own script.
+2. Give the tool its own `app.js` / `styles.css` inside its folder —
+   plain relative filenames are fine since the folder is the namespace.
+3. Add an entry to the `TOOLS` array in `nav.js` (`id`, `label`,
+   `href: "/tools/<ToolName>/"`, `description`).
 
 ## Adding an exam
 
-Exam banks are JSON files in `exams/`, listed in `exams/manifest.json`:
+Exam banks are JSON files in `tools/Exam/exams/`, listed in
+`tools/Exam/exams/manifest.json`:
 
 ```json
 {
@@ -28,11 +58,12 @@ Exam banks are JSON files in `exams/`, listed in `exams/manifest.json`:
 ```
 
 You can either:
-- Drop a `.json` file in `exams/` and add an entry to the manifest by hand, or
+- Drop a `.json` file in `tools/Exam/exams/` and add an entry to the
+  manifest by hand, or
 - Use the **Upload exam** control on the start screen — the server validates
-  the file, writes it to `exams/`, and adds a manifest entry automatically
-  (flagged `"uploaded": true`, which is what lets it be deleted again from
-  the UI).
+  the file, writes it to `tools/Exam/exams/`, and adds a manifest entry
+  automatically (flagged `"uploaded": true`, which is what lets it be
+  deleted again from the UI).
 
 ## Exam file format
 

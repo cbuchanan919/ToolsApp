@@ -3,7 +3,7 @@
 Practice Exam Console — local server.
 
 Serves the app (same as `python -m http.server`) AND handles exam uploads:
-  POST   /api/exams        body: {"fileName": "...", "exam": {...}}  -> writes exams/<file>.json, updates manifest.json
+  POST   /api/exams        body: {"fileName": "...", "exam": {...}}  -> writes tools/Exam/exams/<file>.json, updates manifest.json
   DELETE /api/exams/<file>                                            -> removes an uploaded exam + its manifest entry
 
 Only exams the server itself added (flagged "uploaded": true in manifest.json) can be deleted this way.
@@ -22,14 +22,14 @@ import sys
 import functools
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXAMS_DIR = os.path.join(BASE_DIR, "exams")
+EXAMS_DIR = os.path.join(BASE_DIR, "tools", "Exam", "exams")
 MANIFEST_PATH = os.path.join(EXAMS_DIR, "manifest.json")
 
 VALID_TYPES = ("single", "multiple")
 
 
 # ---------------------------------------------------------------------------
-# Exam schema validation (mirrors the client-side validator in app.js)
+# Exam schema validation (mirrors the client-side validator in tools/Exam/app.js)
 # ---------------------------------------------------------------------------
 def validate_exam_schema(obj):
     errors = []

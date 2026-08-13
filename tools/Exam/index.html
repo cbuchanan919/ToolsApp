@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Exam · Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/global.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-tool="exam">
+
+<div id="tools-nav-root"></div>
+
+<div class="exam-shell">
+
+  <header class="exam-topbar">
+    <div class="exam-topbar-id" id="exam-topbar-left" title="Close exam and return to selection">
+      <span class="exam-dot" id="exam-status-dot"></span>
+      <span class="exam-topbar-label">exam-console</span>
+    </div>
+    <div class="exam-topbar-right" id="exam-topbar-right"></div>
+  </header>
+
+  <main class="exam-main">
+
+    <!-- START SCREEN -->
+    <section id="exam-screen-start" class="exam-screen exam-screen--active">
+      <div class="exam-card exam-card--start">
+        <div class="exam-eyebrow">session // configure</div>
+        <h1 class="exam-title">Practice Exam</h1>
+        <p class="exam-sub">Pick an exam bank and a mode. Run this with <code>python serve.py</code> so uploads can save to disk.</p>
+
+        <div class="exam-field">
+          <label class="exam-field-label" for="exam-select">Exam</label>
+          <select id="exam-select" class="exam-select">
+            <option value="">Loading exam list…</option>
+          </select>
+          <div id="exam-meta-line" class="exam-meta-line" hidden></div>
+        </div>
+
+        <div class="exam-field">
+          <div class="exam-field-label-row">
+            <label class="exam-field-label" for="exam-upload-input">Upload a test (saved to exams/)</label>
+          </div>
+          <label for="exam-upload-input" class="exam-upload-btn">
+            <span>Choose JSON file…</span>
+          </label>
+          <input type="file" id="exam-upload-input" accept="application/json,.json" class="exam-upload-input-hidden" />
+          <div id="exam-upload-status" class="exam-upload-status" hidden></div>
+          <div id="exam-upload-errors" class="exam-upload-errors" hidden></div>
+
+          <div id="exam-uploaded-list" class="exam-uploaded-list"></div>
+        </div>
+
+        <div class="exam-field">
+          <label class="exam-field-label">Mode</label>
+          <div class="exam-mode-options" id="exam-mode-options">
+            <button type="button" class="exam-mode-btn" data-mode="study">
+              <span class="exam-mode-btn-title">Study Mode</span>
+              <span class="exam-mode-btn-desc">See the correct answer and explanation after every question.</span>
+            </button>
+            <button type="button" class="exam-mode-btn" data-mode="test">
+              <span class="exam-mode-btn-title">Test Mode</span>
+              <span class="exam-mode-btn-desc">No feedback until you finish. Closer to the real exam.</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="exam-start-error" class="exam-error" hidden></div>
+
+        <button id="exam-start-btn" class="exam-btn exam-btn--primary exam-btn--wide" disabled>Start Exam</button>
+      </div>
+    </section>
+
+    <!-- QUESTION SCREEN -->
+    <section id="exam-screen-question" class="exam-screen">
+      <div class="exam-progress-wrap">
+        <div class="exam-progress-meta">
+          <span id="exam-progress-text">Question 1 of 1</span>
+          <span class="exam-progress-meta-right">
+            <span id="exam-progress-domain" class="exam-progress-domain"></span>
+            <span id="exam-timer" class="exam-timer" title="Counts up only while this tab is focused">00:00</span>
+          </span>
+        </div>
+        <div class="exam-progress-track">
+          <div id="exam-progress-fill" class="exam-progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="exam-card exam-card--question">
+        <div id="exam-multi-hint" class="exam-multi-hint" hidden>Select all that apply</div>
+        <h2 id="exam-question-text" class="exam-question-text"></h2>
+
+        <div id="exam-options" class="exam-options"></div>
+
+        <div id="exam-feedback" class="exam-feedback" hidden>
+          <div id="exam-feedback-result" class="exam-feedback-result"></div>
+          <p id="exam-feedback-explanation" class="exam-feedback-explanation"></p>
+          <div id="exam-feedback-timesensitive" class="exam-feedback-timesensitive" hidden>
+            ⚠ This detail may change over time — verify against current docs.
+          </div>
+        </div>
+
+        <div class="exam-question-nav">
+          <button id="exam-back-btn" class="exam-btn exam-btn--ghost" disabled>Back</button>
+          <button id="exam-check-btn" class="exam-btn exam-btn--secondary" hidden disabled>Check Answer</button>
+          <button id="exam-next-btn" class="exam-btn exam-btn--primary" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS SCREEN -->
+    <section id="exam-screen-results" class="exam-screen">
+      <div class="exam-card exam-card--results-summary">
+        <div class="exam-eyebrow">session // complete</div>
+        <div class="exam-results-score-row">
+          <div>
+            <div id="exam-results-score" class="exam-results-score">0 / 0</div>
+            <div id="exam-results-pct" class="exam-results-pct">0%</div>
+            <div id="exam-results-time" class="exam-results-time">Time: 00:00</div>
+          </div>
+          <div id="exam-results-verdict" class="exam-results-verdict"></div>
+        </div>
+
+        <div class="exam-domain-breakdown">
+          <div class="exam-eyebrow exam-eyebrow--tight">Domain breakdown</div>
+          <div id="exam-domain-list" class="exam-domain-list"></div>
+        </div>
+
+        <button id="exam-retake-btn" class="exam-btn exam-btn--primary exam-btn--wide">Retake Exam</button>
+      </div>
+
+      <div class="exam-card exam-card--review">
+        <div class="exam-eyebrow">full question review</div>
+        <div id="exam-review-list" class="exam-review-list"></div>
+      </div>
+    </section>
+
+    <!-- ERROR / EMPTY STATE -->
+    <section id="exam-screen-error" class="exam-screen">
+      <div class="exam-card exam-card--error">
+        <div class="exam-eyebrow">session // error</div>
+        <h2 class="exam-title">Something didn't load</h2>
+        <p id="exam-global-error-text" class="exam-sub"></p>
+        <button id="exam-error-retry-btn" class="exam-btn exam-btn--primary">Back to start</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="/nav.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
