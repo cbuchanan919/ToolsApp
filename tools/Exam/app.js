@@ -82,13 +82,13 @@
 
   function setTopbarStatus(mode) {
     if (mode === "live") {
-      el.statusDot.className = "exam-dot exam-dot--live";
+      el.statusDot.className = "tools-status-dot tools-status-dot--live";
       el.topbarRight.textContent = "in progress";
     } else if (mode === "done") {
-      el.statusDot.className = "exam-dot exam-dot--ok";
+      el.statusDot.className = "tools-status-dot tools-status-dot--ok";
       el.topbarRight.textContent = "complete";
     } else {
-      el.statusDot.className = "exam-dot";
+      el.statusDot.className = "tools-status-dot";
       el.topbarRight.textContent = "idle";
     }
   }

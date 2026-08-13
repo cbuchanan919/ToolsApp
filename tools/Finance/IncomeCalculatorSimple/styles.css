@@ -8,7 +8,6 @@ body {
 a { color: var(--tools-accent); }
 
 .masthead{max-width:var(--tools-content-width);margin:0 auto;padding:48px 24px 20px 24px;border-bottom:1px solid var(--tools-line);}
-.masthead .eyebrow{font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--tools-accent);margin:0 0 6px 0;}
 .masthead h1{font-size:clamp(32px,5vw,48px);font-weight:700;margin:0 0 8px 0;letter-spacing:-0.01em;color:var(--tools-text);}
 .masthead p{margin:0;color:var(--tools-muted);font-size:15px;max-width:70ch;}
 .wrap{max-width:var(--tools-content-width);margin:0 auto;padding:0 24px;}

@@ -166,6 +166,62 @@ input:focus-visible,
   background: var(--tools-panel-alt);
 }
 
+/* -------- per-tool status bar --------
+   A second bar a tool can place below the universal nav to show its own
+   identity/state (e.g. Exam's session status, or a calculator's variant
+   label). Shared here so every tool that has one looks and behaves the
+   same way; .tools-status-bar-id--clickable is opt-in for tools (like
+   Exam) where the left side is an actual control, not just a label.
+   Width-matched to --tools-content-width (and centered) so it lines up
+   with the page's main content column instead of running edge-to-edge
+   like the universal nav above it. */
+.tools-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--tools-content-width);
+  margin: 0 auto;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--tools-line);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tools-muted);
+}
+
+.tools-status-bar-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tools-status-bar-id--clickable {
+  cursor: pointer;
+}
+
+.tools-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tools-idle);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tools-status-dot--live {
+  background: var(--tools-info);
+  animation: tools-status-pulse 1.8s ease-in-out infinite;
+}
+
+.tools-status-dot--ok {
+  background: var(--tools-ok);
+}
+
+@keyframes tools-status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
 /* -------- landing page -------- */
 .tools-home-main {
   max-width: var(--tools-content-width);

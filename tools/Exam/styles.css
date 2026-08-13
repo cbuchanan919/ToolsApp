@@ -32,36 +32,8 @@
   }
 }
 
-/* -------- topbar -------- */
-.exam-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--tools-line);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--tools-muted);
-}
-
-.exam-topbar-id { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-
-.exam-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--tools-idle);
-  display: inline-block;
-  flex-shrink: 0;
-}
-.exam-dot--live { background: var(--tools-info); animation: exam-pulse 1.8s ease-in-out infinite; }
-.exam-dot--ok { background: var(--tools-ok); }
-
-@keyframes exam-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
+/* -------- topbar --------
+   Uses the shared .tools-status-bar component from /global.css. */
 
 /* -------- layout -------- */
 .exam-main {
