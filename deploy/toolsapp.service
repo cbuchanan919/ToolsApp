@@ -1,0 +1,21 @@
+# The app itself. Runs serve.py under systemd so it survives reboots/crashes.
+#
+# Install:
+#   sudo cp toolsapp.service /etc/systemd/system/
+#   sudo systemctl enable --now toolsapp
+#
+# Adjust WorkingDirectory/ExecStart if the repo isn't checked out at
+# /opt/toolsapp, and User if you're not using a dedicated "toolsapp" user.
+
+[Unit]
+Description=ToolsApp
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/toolsapp/serve.py 8000
+WorkingDirectory=/opt/toolsapp
+Restart=on-failure
+User=toolsapp
+
+[Install]
+WantedBy=multi-user.target

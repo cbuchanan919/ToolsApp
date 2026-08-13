@@ -1,0 +1,8 @@
+# Lets the toolsapp user restart the toolsapp service without a password,
+# and nothing else. deploy-check.sh needs this to apply an update it pulls.
+#
+# Install:
+#   sudo visudo -cf toolsapp-sudoers && sudo cp toolsapp-sudoers /etc/sudoers.d/toolsapp-deploy
+#   sudo chmod 440 /etc/sudoers.d/toolsapp-deploy
+
+toolsapp ALL=(root) NOPASSWD: /usr/bin/systemctl restart toolsapp

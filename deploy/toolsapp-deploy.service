@@ -1,0 +1,15 @@
+# Oneshot unit that runs deploy-check.sh. Triggered on a schedule by
+# toolsapp-deploy.timer — not meant to be started directly (systemctl start
+# toolsapp-deploy.service works fine for a manual test run, though).
+#
+# Install:
+#   sudo cp toolsapp-deploy.service toolsapp-deploy.timer /etc/systemd/system/
+#   sudo systemctl enable --now toolsapp-deploy.timer
+
+[Unit]
+Description=Pull and restart ToolsApp if origin/main has new commits
+
+[Service]
+Type=oneshot
+ExecStart=/opt/toolsapp/deploy/deploy-check.sh
+User=toolsapp
