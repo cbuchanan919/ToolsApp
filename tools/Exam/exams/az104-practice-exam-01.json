@@ -1,0 +1,1177 @@
+{
+  "examTitle": "AZ-104: Microsoft Azure Administrator Practice Exam 1",
+  "description": "40-question scenario-based practice exam covering the five AZ-104 skill areas per Microsoft's official skills outline effective April 17, 2026: Manage Azure identities and governance (20-25%), Implement and manage storage (15-20%), Deploy and manage Azure compute resources (20-25%), Implement and manage virtual networking (15-20%), Monitor and maintain Azure resources (10-15%).",
+  "author": "Chris Buchanan",
+  "dateCreated": "2026-08-13",
+  "totalQuestions": 40,
+  "domains": {
+    "Manage Azure identities and governance": "20-25%",
+    "Implement and manage storage": "15-20%",
+    "Deploy and manage Azure compute resources": "20-25%",
+    "Implement and manage virtual networking": "15-20%",
+    "Monitor and maintain Azure resources": "10-15%"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "An administrator needs to let a partner organization's employees sign in to a shared Microsoft Entra tenant using their own corporate credentials, without creating separate accounts for them. Which feature should the administrator use?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Microsoft Entra B2B collaboration (guest users)"
+        },
+        {
+          "letter": "B",
+          "text": "Self-service password reset"
+        },
+        {
+          "letter": "C",
+          "text": "A dynamic group"
+        },
+        {
+          "letter": "D",
+          "text": "A conditional access policy"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "B2B collaboration invites external users as guests who authenticate with their home organization's credentials, avoiding duplicate account creation.",
+      "timeSensitive": false
+    },
+    {
+      "id": 2,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "A company wants users to be automatically added to a Microsoft Entra group based on their department attribute, without an administrator manually adding them. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A dynamic membership group with a rule based on the department attribute"
+        },
+        {
+          "letter": "B",
+          "text": "An assigned group with a scheduled PowerShell script"
+        },
+        {
+          "letter": "C",
+          "text": "A distribution list"
+        },
+        {
+          "letter": "D",
+          "text": "A resource group tag"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Dynamic membership groups evaluate rules against user or device attributes and automatically add or remove members as those attributes change.",
+      "timeSensitive": false
+    },
+    {
+      "id": 3,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "Users are frequently locking themselves out because they forget their passwords, generating a high volume of help desk tickets. Which feature reduces this load while letting users regain access on their own?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Self-service password reset (SSPR)"
+        },
+        {
+          "letter": "B",
+          "text": "Conditional access"
+        },
+        {
+          "letter": "C",
+          "text": "Privileged Identity Management"
+        },
+        {
+          "letter": "D",
+          "text": "A resource lock"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "SSPR lets users verify their identity and reset their own password without contacting the help desk.",
+      "timeSensitive": false
+    },
+    {
+      "id": 4,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "A developer must be able to start, stop, and restart virtual machines in a specific resource group but must not be able to delete them or modify networking. Which approach satisfies this with the least administrative effort?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Assign the built-in Virtual Machine Contributor role at the subscription scope"
+        },
+        {
+          "letter": "B",
+          "text": "Assign the built-in Virtual Machine Contributor role scoped to the resource group"
+        },
+        {
+          "letter": "C",
+          "text": "Assign the Owner role scoped to the resource group"
+        },
+        {
+          "letter": "D",
+          "text": "Add the developer to the Global Administrator role"
+        }
+      ],
+      "correctAnswers": [
+        "B"
+      ],
+      "explanation": "Scoping the built-in Virtual Machine Contributor role to the resource group grants VM start/stop/restart rights there only, without subscription-wide access.",
+      "timeSensitive": false
+    },
+    {
+      "id": 5,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "An administrator assigns a user the Reader role at the subscription level and the Contributor role on a single resource group. What effective access does the user have in that resource group?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Contributor, because a more specific (lower) scope assignment takes precedence for that scope"
+        },
+        {
+          "letter": "B",
+          "text": "Reader only, because subscription-level assignments always override resource group assignments"
+        },
+        {
+          "letter": "C",
+          "text": "No access, because the two assignments conflict"
+        },
+        {
+          "letter": "D",
+          "text": "Owner, because the roles are combined and elevated"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "RBAC role assignments are additive, and a role granted at a narrower scope such as a resource group applies fully within that scope alongside the broader Reader role elsewhere.",
+      "timeSensitive": false
+    },
+    {
+      "id": 6,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "Management wants to guarantee that no one, including subscription owners, can accidentally delete a production virtual network. What should be configured on the resource?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A CanNotDelete resource lock"
+        },
+        {
+          "letter": "B",
+          "text": "An Azure Policy audit rule"
+        },
+        {
+          "letter": "C",
+          "text": "A ReadOnly tag"
+        },
+        {
+          "letter": "D",
+          "text": "Removal of the Owner role assignment"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A CanNotDelete lock prevents the resource from being deleted regardless of a user's RBAC permissions, though modifications are still allowed.",
+      "timeSensitive": false
+    },
+    {
+      "id": 7,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "An organization must ensure that every new storage account deployed anywhere in a subscription automatically has a specific SKU enforced, and any non-compliant deployment is blocked. Which governance tool should be used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Policy with a deny effect"
+        },
+        {
+          "letter": "B",
+          "text": "A resource lock"
+        },
+        {
+          "letter": "C",
+          "text": "A management group"
+        },
+        {
+          "letter": "D",
+          "text": "An RBAC custom role"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Azure Policy evaluates resource properties against defined rules and can deny deployments that do not comply, such as an unapproved storage SKU.",
+      "timeSensitive": false
+    },
+    {
+      "id": 8,
+      "domain": "Manage Azure identities and governance",
+      "type": "multiple",
+      "question": "An administrator needs to organize resources for billing separation between two departments while also applying a consistent Azure Policy across both departments' subscriptions. Which two actions accomplish this? (Choose two.)",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Create a separate subscription for each department"
+        },
+        {
+          "letter": "B",
+          "text": "Place both subscriptions under a shared management group and assign the policy there"
+        },
+        {
+          "letter": "C",
+          "text": "Apply a resource lock to each subscription"
+        },
+        {
+          "letter": "D",
+          "text": "Create a single resource group shared by both departments"
+        }
+      ],
+      "correctAnswers": [
+        "A",
+        "B"
+      ],
+      "explanation": "Separate subscriptions give each department its own billing boundary, and a management group above both subscriptions lets a policy be assigned once and inherited by all subscriptions under it.",
+      "timeSensitive": false
+    },
+    {
+      "id": 9,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "Finance wants an automatic notification when a resource group's monthly spend is projected to exceed a set amount, before the month ends. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A budget with an alert threshold in Cost Management"
+        },
+        {
+          "letter": "B",
+          "text": "An Azure Advisor recommendation"
+        },
+        {
+          "letter": "C",
+          "text": "A resource lock on the resource group"
+        },
+        {
+          "letter": "D",
+          "text": "An Azure Policy deny rule"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A Cost Management budget with an alert can notify stakeholders when actual or forecasted spend crosses a defined threshold.",
+      "timeSensitive": false
+    },
+    {
+      "id": 10,
+      "domain": "Manage Azure identities and governance",
+      "type": "single",
+      "question": "A user reports they cannot tell why they have access to modify a virtual machine when they were only ever added to a security group. What should the administrator check to understand the source of that access?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The role assignments and their inherited scope, including group-based assignments, in Access control (IAM)"
+        },
+        {
+          "letter": "B",
+          "text": "The virtual machine's diagnostic settings"
+        },
+        {
+          "letter": "C",
+          "text": "The storage account access keys"
+        },
+        {
+          "letter": "D",
+          "text": "The virtual network's NSG rules"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Access control (IAM) shows all role assignments including those inherited through group membership and scope, which explains where the effective permission came from.",
+      "timeSensitive": false
+    },
+    {
+      "id": 11,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "A web application needs to give a third-party service temporary, time-limited access to upload files to a single blob container without sharing the storage account key. What should be used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A shared access signature (SAS) scoped to the container with an expiry time"
+        },
+        {
+          "letter": "B",
+          "text": "A storage account access key"
+        },
+        {
+          "letter": "C",
+          "text": "A resource lock"
+        },
+        {
+          "letter": "D",
+          "text": "An NSG rule on the storage account"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A SAS token grants delegated, time-limited access with specific permissions to a resource such as a container, without exposing the account key.",
+      "timeSensitive": false
+    },
+    {
+      "id": 12,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "An administrator wants the ability to revoke all previously issued SAS tokens for a container at once if a token is suspected of being compromised, without regenerating the storage account keys. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A stored access policy on the container"
+        },
+        {
+          "letter": "B",
+          "text": "A resource lock"
+        },
+        {
+          "letter": "C",
+          "text": "Storage account firewall rules"
+        },
+        {
+          "letter": "D",
+          "text": "Object replication"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A stored access policy centralizes SAS permissions and expiry on the server side, so revoking or modifying the policy immediately invalidates SAS tokens tied to it.",
+      "timeSensitive": false
+    },
+    {
+      "id": 13,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "A company needs an on-premises file server share to be accessible from Azure VMs while preserving individual Active Directory user permissions on files, rather than relying on the storage account key for everyone. Which Azure Files feature should be used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Identity-based authentication for Azure Files with Active Directory"
+        },
+        {
+          "letter": "B",
+          "text": "A shared access signature for the file share"
+        },
+        {
+          "letter": "C",
+          "text": "Storage account access keys distributed to each user"
+        },
+        {
+          "letter": "D",
+          "text": "Blob versioning"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Identity-based authentication lets Azure Files enforce NTFS-style permissions tied to Active Directory identities instead of a shared account key.",
+      "timeSensitive": false
+    },
+    {
+      "id": 14,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "A business requires that data in a storage account remains available even if an entire Azure region becomes unavailable, and reads should still be possible from the secondary region during an outage. Which redundancy option should be selected?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Read-access geo-redundant storage (RA-GRS)"
+        },
+        {
+          "letter": "B",
+          "text": "Locally redundant storage (LRS)"
+        },
+        {
+          "letter": "C",
+          "text": "Zone-redundant storage (ZRS)"
+        },
+        {
+          "letter": "D",
+          "text": "Hot access tier"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "RA-GRS replicates data to a paired secondary region and allows read access to that secondary copy, providing protection against a full regional outage.",
+      "timeSensitive": false
+    },
+    {
+      "id": 15,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "An administrator wants blobs older than 90 days that are infrequently accessed to automatically move to a cheaper storage tier, and blobs older than 365 days to be deleted, without manual intervention. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A blob lifecycle management policy"
+        },
+        {
+          "letter": "B",
+          "text": "Blob versioning"
+        },
+        {
+          "letter": "C",
+          "text": "Object replication"
+        },
+        {
+          "letter": "D",
+          "text": "A stored access policy"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Lifecycle management policies define rule-based actions, such as tiering or deletion, that run automatically based on a blob's age or last access time.",
+      "timeSensitive": false
+    },
+    {
+      "id": 16,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "An administrator needs to migrate a large volume of files from an on-premises server into Azure Blob Storage as efficiently as possible from the command line. Which tool is best suited for this task?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "AzCopy"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Storage Explorer only"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Bastion"
+        },
+        {
+          "letter": "D",
+          "text": "Azure Site Recovery"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "AzCopy is a command-line utility purpose-built for high-performance copying of data into and out of Azure Storage.",
+      "timeSensitive": false
+    },
+    {
+      "id": 17,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "A team accidentally overwrote a blob with an incorrect version and needs to restore the previous version of that specific blob without restoring the entire container from backup. Which feature should have been enabled in advance to make this possible?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Blob versioning"
+        },
+        {
+          "letter": "B",
+          "text": "Storage account encryption"
+        },
+        {
+          "letter": "C",
+          "text": "A SAS token"
+        },
+        {
+          "letter": "D",
+          "text": "Storage firewall rules"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Blob versioning automatically keeps prior versions of a blob whenever it is modified, allowing an earlier version to be restored.",
+      "timeSensitive": false
+    },
+    {
+      "id": 18,
+      "domain": "Implement and manage storage",
+      "type": "single",
+      "question": "An administrator wants a storage account to reject all traffic from the public internet except for connections originating from the organization's two office IP address ranges. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Storage firewall rules that allow only the specified IP ranges"
+        },
+        {
+          "letter": "B",
+          "text": "A shared access signature limited to those IP ranges"
+        },
+        {
+          "letter": "C",
+          "text": "Blob soft delete"
+        },
+        {
+          "letter": "D",
+          "text": "Object replication rules"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Storage account firewall settings can restrict network access to selected virtual networks and specific public IP address ranges, denying all other traffic by default.",
+      "timeSensitive": false
+    },
+    {
+      "id": 19,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "An administrator has a working ARM template for a virtual network and wants to adopt a more concise, readable authoring language while deploying the same resources. What should the administrator do?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Convert the ARM template to a Bicep file and deploy that instead"
+        },
+        {
+          "letter": "B",
+          "text": "Rewrite the deployment entirely as a PowerShell script with no template"
+        },
+        {
+          "letter": "C",
+          "text": "Deploy the ARM template twice to two regions"
+        },
+        {
+          "letter": "D",
+          "text": "Add more parameters to the ARM template"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Bicep is a domain-specific language that compiles to ARM JSON, and Azure tooling supports converting an existing ARM template to Bicep for more concise authoring.",
+      "timeSensitive": false
+    },
+    {
+      "id": 20,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A compliance requirement states that disk encryption keys for a virtual machine must never be stored on the same host as the encrypted data, including temporary and cache disks. Which feature should be enabled?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Encryption at host"
+        },
+        {
+          "letter": "B",
+          "text": "Availability zones"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Bastion"
+        },
+        {
+          "letter": "D",
+          "text": "A resource lock"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Encryption at host encrypts data on the physical host itself, including temp and cache disks, ensuring data is encrypted end-to-end outside the VM's OS.",
+      "timeSensitive": false
+    },
+    {
+      "id": 21,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A virtual machine was originally deployed into the wrong resource group. The administrator needs to relocate it without recreating it from scratch. What should be done?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Use the move operation to move the VM to the correct resource group"
+        },
+        {
+          "letter": "B",
+          "text": "Delete the VM and redeploy it"
+        },
+        {
+          "letter": "C",
+          "text": "Apply a resource lock to the VM"
+        },
+        {
+          "letter": "D",
+          "text": "Create a VM scale set"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Azure supports moving supported resources, including VMs, between resource groups, subscriptions, or regions using the move operation without recreating the resource.",
+      "timeSensitive": false
+    },
+    {
+      "id": 22,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A database workload on a VM is consistently running low on CPU and memory during peak hours. The disk configuration is adequate. What is the most direct fix?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Resize the VM to a larger size"
+        },
+        {
+          "letter": "B",
+          "text": "Add a data disk"
+        },
+        {
+          "letter": "C",
+          "text": "Move the VM to another availability zone"
+        },
+        {
+          "letter": "D",
+          "text": "Enable encryption at host"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "CPU and memory constraints are addressed by changing the VM size to one with more of those resources; disk changes would not resolve a compute bottleneck.",
+      "timeSensitive": false
+    },
+    {
+      "id": 23,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "An application must remain available even if an entire datacenter within a region experiences a power failure. Multiple VM instances need to be spread across physically separate datacenters within one region. What should be used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Availability zones"
+        },
+        {
+          "letter": "B",
+          "text": "A single availability set"
+        },
+        {
+          "letter": "C",
+          "text": "A resource lock"
+        },
+        {
+          "letter": "D",
+          "text": "Blob versioning"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Availability zones are physically separate datacenters within a region, each with independent power and networking, providing protection against a single datacenter failure.",
+      "timeSensitive": false
+    },
+    {
+      "id": 24,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A web tier needs to automatically add or remove VM instances based on CPU load throughout the day. Which service should be deployed?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Virtual Machine Scale Sets"
+        },
+        {
+          "letter": "B",
+          "text": "A single standalone VM"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Container Instances only"
+        },
+        {
+          "letter": "D",
+          "text": "An availability set"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Virtual Machine Scale Sets manage a group of identical VMs and support autoscaling rules that add or remove instances based on metrics such as CPU load.",
+      "timeSensitive": false
+    },
+    {
+      "id": 25,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A team wants to store and version their custom container images so they can be pulled during deployments to Azure Container Apps. What should they provision first?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Container Registry"
+        },
+        {
+          "letter": "B",
+          "text": "Azure App Service plan"
+        },
+        {
+          "letter": "C",
+          "text": "An availability set"
+        },
+        {
+          "letter": "D",
+          "text": "A storage account file share"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Azure Container Registry stores and manages private container images, which can then be referenced by services such as Container Apps or Container Instances.",
+      "timeSensitive": false
+    },
+    {
+      "id": 26,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A company wants to host a custom domain, such as www.contoso.com, for a web app running in Azure App Service and needs traffic to be encrypted in transit. Besides mapping the custom domain, what else must be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A TLS/SSL certificate bound to the custom domain"
+        },
+        {
+          "letter": "B",
+          "text": "A deployment slot"
+        },
+        {
+          "letter": "C",
+          "text": "An availability set"
+        },
+        {
+          "letter": "D",
+          "text": "A resource lock"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Encrypting traffic to a custom domain requires configuring a TLS/SSL certificate and binding it to that hostname on the App Service.",
+      "timeSensitive": false
+    },
+    {
+      "id": 27,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "A development team wants to test a new version of a web app in production-like conditions and be able to swap it into production with minimal downtime if it performs well. What App Service feature supports this?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Deployment slots"
+        },
+        {
+          "letter": "B",
+          "text": "Blob lifecycle management"
+        },
+        {
+          "letter": "C",
+          "text": "Availability zones"
+        },
+        {
+          "letter": "D",
+          "text": "Resource locks"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Deployment slots allow a separate, live App Service environment for staging a new version, which can then be swapped into production with minimal downtime.",
+      "timeSensitive": false
+    },
+    {
+      "id": 28,
+      "domain": "Deploy and manage Azure compute resources",
+      "type": "single",
+      "question": "An App Service web app must not be reachable from the public internet and should only be accessible from resources inside a specific virtual network. Which configuration area should the administrator focus on?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The App Service networking settings, such as private endpoints or VNet integration"
+        },
+        {
+          "letter": "B",
+          "text": "The App Service backup settings"
+        },
+        {
+          "letter": "C",
+          "text": "Deployment slots"
+        },
+        {
+          "letter": "D",
+          "text": "Storage account firewall rules"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "App Service networking features, including private endpoints and virtual network integration, control whether the app is reachable from the public internet or only from within a VNet.",
+      "timeSensitive": false
+    },
+    {
+      "id": 29,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "Two virtual networks in different regions, each belonging to the same organization, need to communicate privately with low latency without routing traffic over the public internet or through a VPN gateway. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Virtual network peering"
+        },
+        {
+          "letter": "B",
+          "text": "A network security group"
+        },
+        {
+          "letter": "C",
+          "text": "Azure Bastion"
+        },
+        {
+          "letter": "D",
+          "text": "A public load balancer"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "VNet peering connects two virtual networks directly over the Microsoft backbone network, enabling private, low-latency communication without a gateway.",
+      "timeSensitive": false
+    },
+    {
+      "id": 30,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "Traffic destined for an on-premises network from a subnet must be forced through a network virtual appliance instead of taking the default route. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A user-defined route (UDR)"
+        },
+        {
+          "letter": "B",
+          "text": "A network security group rule"
+        },
+        {
+          "letter": "C",
+          "text": "A service endpoint"
+        },
+        {
+          "letter": "D",
+          "text": "Virtual network peering"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "User-defined routes override Azure's default system routes, allowing traffic to be directed through a specific next hop such as a network virtual appliance.",
+      "timeSensitive": false
+    },
+    {
+      "id": 31,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "An administrator needs to allow inbound RDP access to a specific VM only from the corporate office IP range and deny it from everywhere else. What should be configured on the VM's subnet or network interface?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A network security group (NSG) rule scoped to the corporate IP range"
+        },
+        {
+          "letter": "B",
+          "text": "A user-defined route"
+        },
+        {
+          "letter": "C",
+          "text": "Virtual network peering"
+        },
+        {
+          "letter": "D",
+          "text": "A public load balancer rule"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "NSGs filter inbound and outbound traffic to resources using rules based on source, destination, port, and protocol, which can restrict RDP to a specific IP range.",
+      "timeSensitive": false
+    },
+    {
+      "id": 32,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "A VM is unreachable on port 443, and multiple NSGs are applied at both the subnet and network interface level. What tool should the administrator use to determine which specific rule is blocking the traffic?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Effective security rules in Network Watcher"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Advisor"
+        },
+        {
+          "letter": "C",
+          "text": "Blob lifecycle management"
+        },
+        {
+          "letter": "D",
+          "text": "Cost Management budgets"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "The effective security rules view combines all NSGs applied at the subnet and NIC level to show the actual rule set affecting traffic, making it possible to identify what's blocking a connection.",
+      "timeSensitive": false
+    },
+    {
+      "id": 33,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "Administrators need to securely RDP or SSH into VMs that have no public IP addresses, without deploying a jump box or opening inbound NSG rules from the internet. What should be deployed?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Bastion"
+        },
+        {
+          "letter": "B",
+          "text": "A public load balancer"
+        },
+        {
+          "letter": "C",
+          "text": "A service endpoint"
+        },
+        {
+          "letter": "D",
+          "text": "Virtual network peering"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Azure Bastion provides browser-based RDP and SSH connectivity to VMs over TLS through the Azure portal, without requiring a public IP on the VM or inbound internet rules.",
+      "timeSensitive": false
+    },
+    {
+      "id": 34,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "A storage account should only be reachable from resources inside a specific subnet, using its private IP address, rather than the storage account's public endpoint. What should be configured?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A private endpoint for the storage account"
+        },
+        {
+          "letter": "B",
+          "text": "A user-defined route"
+        },
+        {
+          "letter": "C",
+          "text": "An internal load balancer"
+        },
+        {
+          "letter": "D",
+          "text": "Azure DNS"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A private endpoint assigns the PaaS resource a private IP address within the VNet, allowing traffic to stay on the private network instead of the public endpoint.",
+      "timeSensitive": false
+    },
+    {
+      "id": 35,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "A company wants to host its own DNS zone for contoso.com within Azure and manage records for internal and external resources centrally. Which service should be used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure DNS"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Bastion"
+        },
+        {
+          "letter": "C",
+          "text": "Network Watcher"
+        },
+        {
+          "letter": "D",
+          "text": "A service endpoint"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Azure DNS is a hosting service for DNS domains that provides name resolution using Microsoft's Azure infrastructure.",
+      "timeSensitive": false
+    },
+    {
+      "id": 36,
+      "domain": "Implement and manage virtual networking",
+      "type": "single",
+      "question": "Backend VMs behind a load balancer are showing as unhealthy, and no traffic is being distributed to them even though the VMs themselves are running normally. What is the most likely area to check first?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "The load balancer's health probe configuration"
+        },
+        {
+          "letter": "B",
+          "text": "Blob lifecycle management rules"
+        },
+        {
+          "letter": "C",
+          "text": "Storage account redundancy settings"
+        },
+        {
+          "letter": "D",
+          "text": "Resource locks on the resource group"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A misconfigured health probe (wrong port, path, or protocol) will cause a load balancer to mark otherwise healthy backend instances as unavailable and stop sending them traffic.",
+      "timeSensitive": false
+    },
+    {
+      "id": 37,
+      "domain": "Monitor and maintain Azure resources",
+      "type": "single",
+      "question": "An administrator wants to be automatically notified, and have a webhook triggered, whenever a VM's CPU utilization exceeds 90% for 5 minutes. What should be configured in Azure Monitor?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "An alert rule with an associated action group"
+        },
+        {
+          "letter": "B",
+          "text": "A backup policy"
+        },
+        {
+          "letter": "C",
+          "text": "A resource lock"
+        },
+        {
+          "letter": "D",
+          "text": "Blob versioning"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "An Azure Monitor alert rule evaluates a metric condition, such as CPU threshold, and an associated action group defines the response, such as a notification or webhook call.",
+      "timeSensitive": false
+    },
+    {
+      "id": 38,
+      "domain": "Monitor and maintain Azure resources",
+      "type": "single",
+      "question": "An administrator needs to write a query against collected log data to find all failed sign-in events over the past 24 hours across several resources. Which Azure Monitor feature should be used?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Log Analytics with a Kusto Query Language (KQL) query"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Advisor recommendations"
+        },
+        {
+          "letter": "C",
+          "text": "Network Watcher packet capture"
+        },
+        {
+          "letter": "D",
+          "text": "Blob lifecycle management"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Log Analytics stores collected log data and is queried using Kusto Query Language to search, filter, and analyze events such as failed sign-ins.",
+      "timeSensitive": false
+    },
+    {
+      "id": 39,
+      "domain": "Monitor and maintain Azure resources",
+      "type": "single",
+      "question": "A company needs to back up several Azure VMs on a recurring schedule and be able to restore them to a point in time if data becomes corrupted. What must be created first to store these backups?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "A Recovery Services vault"
+        },
+        {
+          "letter": "B",
+          "text": "A storage account with blob versioning"
+        },
+        {
+          "letter": "C",
+          "text": "A load balancer"
+        },
+        {
+          "letter": "D",
+          "text": "An availability set"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "A Recovery Services vault is the container used by Azure Backup to store recovery points and manage backup policies for VMs and other supported workloads.",
+      "timeSensitive": false
+    },
+    {
+      "id": 40,
+      "domain": "Monitor and maintain Azure resources",
+      "type": "single",
+      "question": "A company wants a secondary copy of its production VMs continuously replicated to another region so that, in the event of a regional outage, they can fail over and bring the workload online in that region. Which service accomplishes this?",
+      "options": [
+        {
+          "letter": "A",
+          "text": "Azure Site Recovery"
+        },
+        {
+          "letter": "B",
+          "text": "Azure Backup alone"
+        },
+        {
+          "letter": "C",
+          "text": "Blob versioning"
+        },
+        {
+          "letter": "D",
+          "text": "An NSG rule"
+        }
+      ],
+      "correctAnswers": [
+        "A"
+      ],
+      "explanation": "Azure Site Recovery continuously replicates VMs to a secondary region and orchestrates failover so workloads can be brought online there during an outage.",
+      "timeSensitive": false
+    }
+  ]
+}

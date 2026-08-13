@@ -68,7 +68,7 @@
   line-height: 1.3;
 }
 
-.exam-sub code {
+.exam-card code {
   background: var(--tools-panel-alt);
   border: 1px solid var(--tools-line);
   border-radius: 3px;
@@ -83,6 +83,7 @@
   line-height: 1.6;
   margin: 0 0 26px;
 }
+.exam-sub strong { color: var(--tools-text); font-weight: 600; }
 
 /* -------- exam metadata line -------- */
 .exam-meta-line {
@@ -94,8 +95,79 @@
 .exam-meta-line strong { color: var(--tools-text); font-weight: 600; }
 .exam-meta-line .exam-meta-flag { color: var(--tools-warn); }
 
+/* -------- expandable details (upload spec) -------- */
+.exam-details {
+  border: 1px solid var(--tools-line);
+  border-radius: 6px;
+  background: var(--tools-panel-alt);
+  overflow: hidden;
+}
+
+.exam-details-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tools-text);
+}
+.exam-details-summary::-webkit-details-marker { display: none; }
+
+.exam-details-chev {
+  color: var(--tools-muted);
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+.exam-details[open] .exam-details-chev { transform: rotate(90deg); }
+
+.exam-details-body {
+  padding: 2px 14px 16px;
+  border-top: 1px solid var(--tools-line);
+}
+
+.exam-details-intro {
+  font-size: 12px;
+  color: var(--tools-muted);
+  margin: 12px 0 8px;
+}
+
+.exam-code-block {
+  display: block;
+  background: var(--tools-bg);
+  border: 1px solid var(--tools-line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 0 0 12px;
+}
+.exam-code-block code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--tools-text);
+}
+
+.exam-details-rules {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--tools-muted);
+  line-height: 1.6;
+}
+
+.exam-details-upload-note {
+  font-size: 11px;
+  color: var(--tools-muted);
+  margin: 0 0 10px;
+}
+
 /* -------- upload control -------- */
-.exam-field-label-row { display: flex; justify-content: space-between; align-items: center; }
 
 .exam-upload-input-hidden {
   position: absolute;
@@ -111,15 +183,19 @@
   align-items: center;
   gap: 8px;
   background: var(--tools-panel-alt);
-  border: 1px dashed var(--tools-line);
+  border: 1px solid var(--tools-accent);
   border-radius: 6px;
-  padding: 10px 14px;
+  padding: 10px 16px;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  color: var(--tools-text);
-  transition: border-color 0.15s ease;
+  color: var(--tools-accent);
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.exam-upload-btn:hover { border-color: var(--tools-accent); }
+.exam-upload-btn:hover {
+  background: var(--tools-accent);
+  color: var(--tools-accent-contrast);
+}
 
 .exam-upload-status {
   margin-top: 8px;

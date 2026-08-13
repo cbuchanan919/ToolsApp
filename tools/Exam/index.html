@@ -31,7 +31,8 @@
       <div class="exam-card exam-card--start">
         <div class="exam-eyebrow">session // configure</div>
         <h1 class="exam-title">Practice Exam</h1>
-        <p class="exam-sub">Pick an exam bank and a mode. Run this with <code>python serve.py</code> so uploads can save to disk.</p>
+        <p class="exam-sub">Load a bank of multiple-choice questions and work through it in <strong>Study</strong> mode for instant feedback after every question, or <strong>Test</strong> mode for a real-exam feel with your score revealed at the end. 
+          Either way, you'll get a full answer review and a domain-by-domain breakdown when you finish.</p>
 
         <div class="exam-field">
           <label class="exam-field-label" for="exam-select">Exam</label>
@@ -42,17 +43,51 @@
         </div>
 
         <div class="exam-field">
-          <div class="exam-field-label-row">
-            <label class="exam-field-label" for="exam-upload-input">Upload a test (saved to exams/)</label>
-          </div>
-          <label for="exam-upload-input" class="exam-upload-btn">
-            <span>Choose JSON file…</span>
-          </label>
-          <input type="file" id="exam-upload-input" accept="application/json,.json" class="exam-upload-input-hidden" />
-          <div id="exam-upload-status" class="exam-upload-status" hidden></div>
-          <div id="exam-upload-errors" class="exam-upload-errors" hidden></div>
+          <details class="exam-details">
+            <summary class="exam-details-summary">
+              <span>Upload an exam</span>
+              <span class="exam-details-chev">▸</span>
+            </summary>
+            <div class="exam-details-body">
+              <p class="exam-details-intro">Exam banks are JSON files shaped like this:</p>
+              <pre class="exam-code-block"><code>{
+  "examTitle": "string (required)",
+  "author": "string (optional)",
+  "dateCreated": "YYYY-MM-DD (optional)",
+  "domains": { "Domain Name": "25%" },
+  "questions": [
+    {
+      "id": 1,
+      "domain": "Domain Name",
+      "type": "single" | "multiple",
+      "question": "The question text?",
+      "options": [
+        { "letter": "A", "text": "First option" },
+        { "letter": "B", "text": "Second option" }
+      ],
+      "correctAnswers": ["A"],
+      "explanation": "Why A is correct (optional)",
+      "timeSensitive": false
+    }
+  ]
+}</code></pre>
+              <ul class="exam-details-rules">
+                <li>Every question needs a unique <code>id</code>, a <code>domain</code>, and at least 2 <code>options</code>.</li>
+                <li><code>type: "single"</code> needs exactly 1 correct answer; <code>"multiple"</code> needs 1 or more.</li>
+                <li><code>correctAnswers</code> entries must match one of the option <code>letter</code>s.</li>
+              </ul>
+              <p class="exam-details-upload-note">Validated on upload, then saved to the server for everyone to use.</p>
 
-          <div id="exam-uploaded-list" class="exam-uploaded-list"></div>
+              <label for="exam-upload-input" class="exam-upload-btn">
+                <span>Choose JSON file…</span>
+              </label>
+              <input type="file" id="exam-upload-input" accept="application/json,.json" class="exam-upload-input-hidden" />
+              <div id="exam-upload-status" class="exam-upload-status" hidden></div>
+              <div id="exam-upload-errors" class="exam-upload-errors" hidden></div>
+
+              <div id="exam-uploaded-list" class="exam-uploaded-list"></div>
+            </div>
+          </details>
         </div>
 
         <div class="exam-field">

@@ -385,7 +385,7 @@
       return;
     }
 
-    el.uploadStatus.textContent = "Saving to exams/ …";
+    el.uploadStatus.textContent = "Saving to server …";
     el.uploadStatus.hidden = false;
 
     try {
@@ -419,7 +419,7 @@
       showMetaForExam(parsed);
       updateStartBtnState();
 
-      el.uploadStatus.textContent = 'Saved "' + body.file + '" to exams/ and added it to manifest.json.';
+      el.uploadStatus.textContent = 'Saved "' + body.file + '" to the server.';
       el.uploadStatus.hidden = false;
     } catch (err) {
       showUploadErrors([
@@ -487,7 +487,7 @@
           removeBtn.disabled = false;
           removeBtn.textContent = "Remove";
           el.uploadStatus.hidden = true;
-          showUploadErrors(["Couldn't remove exams/" + u.file + ". " + (err && err.message ? err.message : "")]);
+          showUploadErrors(["Couldn't remove " + u.file + ". " + (err && err.message ? err.message : "")]);
         }
       });
 

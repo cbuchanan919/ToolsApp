@@ -91,6 +91,9 @@ input:focus-visible,
   /* Set explicitly (not inherited from body) so a tool's own font-family
      override on body can't change how the universal nav renders. */
   font-family: var(--tools-mono);
+  /* Anchors the dropdown menu (.tools-nav-menu, absolutely positioned)
+     below the narrow-screen breakpoint. */
+  position: relative;
 }
 
 .tools-theme-toggle {
@@ -164,6 +167,80 @@ input:focus-visible,
 .tools-nav-link--active {
   color: var(--tools-accent);
   background: var(--tools-panel-alt);
+}
+
+/* -------- responsive nav menu --------
+   .tools-nav-menu wraps the links + theme toggle. On wide screens it's
+   `display: contents` — invisible to layout, so its children act as
+   direct flex items of .tools-nav exactly as if the wrapper weren't
+   there. Below the breakpoint it becomes a collapsible dropdown behind
+   a hamburger button instead. */
+.tools-nav-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--tools-muted);
+  background: transparent;
+  border: 1px solid var(--tools-line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.tools-nav-menu-toggle:hover {
+  color: var(--tools-text);
+  border-color: var(--tools-accent);
+}
+
+.tools-nav-menu {
+  display: contents;
+}
+
+@media (max-width: 640px) {
+  .tools-nav-menu-toggle {
+    display: flex;
+  }
+
+  .tools-nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    background: var(--tools-panel);
+    border-bottom: 1px solid var(--tools-line);
+    padding: 10px 20px 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .tools-nav-menu--open {
+    display: flex;
+  }
+
+  .tools-nav-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    margin: 0;
+  }
+
+  .tools-nav-link {
+    padding: 10px;
+  }
+
+  .tools-theme-toggle {
+    align-self: flex-start;
+    margin-top: 6px;
+  }
 }
 
 /* -------- per-tool status bar --------

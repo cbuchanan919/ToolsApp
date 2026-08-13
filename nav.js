@@ -75,13 +75,39 @@
     root.innerHTML =
       '<nav class="tools-nav">' +
       '<a class="tools-nav-title" href="/">Tools</a>' +
+      '<button type="button" class="tools-nav-menu-toggle" id="tools-nav-menu-toggle" ' +
+      'aria-label="Open menu" aria-expanded="false" aria-controls="tools-nav-menu">☰</button>' +
+      '<div class="tools-nav-menu" id="tools-nav-menu">' +
       '<div class="tools-nav-links">' + links + "</div>" +
       '<button type="button" class="tools-theme-toggle" id="tools-theme-toggle"></button>' +
+      "</div>" +
       "</nav>";
 
     updateThemeToggleButton();
     document.getElementById("tools-theme-toggle").addEventListener("click", function () {
       setTheme(getTheme() === "light" ? "dark" : "light");
+    });
+
+    // ---------- responsive dropdown ----------
+    // Below the CSS breakpoint, .tools-nav-menu is a hidden dropdown behind
+    // this hamburger button instead of an inline row (see global.css).
+    var menuToggle = document.getElementById("tools-nav-menu-toggle");
+    var menu = document.getElementById("tools-nav-menu");
+
+    function setMenuOpen(open) {
+      menu.classList.toggle("tools-nav-menu--open", open);
+      menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    menuToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setMenuOpen(!menu.classList.contains("tools-nav-menu--open"));
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!menu.classList.contains("tools-nav-menu--open")) return;
+      if (menu.contains(e.target) || menuToggle.contains(e.target)) return;
+      setMenuOpen(false);
     });
   }
 
