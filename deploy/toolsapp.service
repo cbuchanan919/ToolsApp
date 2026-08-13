@@ -12,8 +12,8 @@ Description=ToolsApp
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/toolsapp/serve.py 8000
-WorkingDirectory=/opt/toolsapp
+ExecStart=/usr/bin/python3 /opt/ToolsApp/serve.py 8000
+WorkingDirectory=/opt/ToolsApp
 Restart=on-failure
 User=toolsapp
 
