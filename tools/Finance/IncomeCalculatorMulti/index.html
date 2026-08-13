@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Income Calculator (Multi) · Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/global.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-tool="income-calculator-multi">
+
+<div id="tools-nav-root"></div>
+
+<div class="masthead">
+  <p class="eyebrow">Ledger No. 03 · Household Edition</p>
+  <h1>Pay Ledger</h1>
+  <p>Track any number of jobs, for any number of people. Each person's tax is computed once on their combined income — not per job — so the numbers stay accurate no matter how many paychecks they're juggling.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- HERO (view-dependent, read-only) -->
+  <div class="hero">
+    <div class="hero-card">
+      <div class="label" id="heroLeftLabel">Gross</div>
+      <div class="amount" id="heroLeftAmount">$0</div>
+      <div class="suffix" id="heroLeftSuffix">/ year</div>
+    </div>
+    <div class="hero-beam-wrap"><div class="hero-beam" id="heroBeam">=</div></div>
+    <div class="hero-card">
+      <div class="label" id="heroRightLabel">Net</div>
+      <div class="amount net" id="heroRightAmount">$0</div>
+      <div class="suffix" id="heroRightSuffix">/ year</div>
+    </div>
+  </div>
+  <div class="view-select-row">
+    <label for="viewSelect">Viewing</label>
+    <select id="viewSelect"></select>
+  </div>
+
+  <!-- PEOPLE & JOBS -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§1</span>People &amp; Jobs</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <p class="section-sub">Add a job for a side gig or second income, or add a person to model a whole household. Retirement %, health/HSA, and filing details are set once per person and apply to that person's combined income.</p>
+      <div id="peopleContainer"></div>
+      <button class="btn-mini add" id="addPersonBtn">+ Add person</button>
+    </div>
+  </details>
+
+  <!-- BREAKDOWN -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§2</span>Pay Breakdown</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <table class="ledger-table"><thead><tr><th>Period</th><th>Gross</th><th>Net (take‑home)</th></tr></thead><tbody id="breakdownBody"></tbody></table>
+      <div class="tax-detail" id="taxDetail"></div>
+      <div class="warn-banner" id="warnBanner" style="display:none;"></div>
+      <div class="info-banner" id="infoBanner" style="display:none;"></div>
+    </div>
+  </details>
+
+  <!-- COMPARATOR -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§3</span>Offer Comparator</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <p class="section-sub">Standalone what‑if: compares two offers as if each were that profile's only income. To see the real marginal effect of adding a second job, add it as a Job under a person in §1 instead.</p>
+      <div class="field-grid" style="margin-bottom:16px;">
+        <div class="field"><label for="cmpProfile">Tax profile</label><select id="cmpProfile"></select></div>
+      </div>
+      <div class="cmp-grid">
+        <div class="cmp-card">
+          <h4>Offer A</h4>
+          <div class="field-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="field"><label for="cmpAType">Type</label><select id="cmpAType"><option value="salary" selected>Annual salary</option><option value="hourly">Hourly rate</option></select></div>
+            <div class="field"><label for="cmpAVal">Amount</label><input type="number" id="cmpAVal" value="65000" step="100"></div>
+          </div>
+        </div>
+        <div class="cmp-card">
+          <h4>Offer B</h4>
+          <div class="field-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="field"><label for="cmpBType">Type</label><select id="cmpBType"><option value="salary" selected>Annual salary</option><option value="hourly">Hourly rate</option></select></div>
+            <div class="field"><label for="cmpBVal">Amount</label><input type="number" id="cmpBVal" value="70000" step="100"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-result" id="cmpResult">
+        <div class="big" id="cmpBig">+$5,000</div>
+        <div class="sub" id="cmpSub"></div>
+        <div class="sub2" id="cmpSub2"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- SETTINGS -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§4</span>Settings</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <div class="field-grid">
+        <div class="field"><label for="ssWageBaseGlobal">Social Security wage base</label><input type="number" id="ssWageBaseGlobal" value="184500" step="100"></div>
+      </div>
+      <p class="section-sub">Applies per person — each person's own Social Security tax is capped at this amount, the way payroll actually works.</p>
+    </div>
+  </details>
+
+  <div class="footer-bar">
+    <div><button class="btn primary" id="saveBtn">Save household</button> <button class="btn" id="resetBtn">Reset to defaults</button></div>
+    <div class="save-note" id="saveNote">Not yet saved this browser.</div>
+  </div>
+
+  <div class="disclaimer">
+    <b>This is an estimate, not tax advice.</b> Federal figures use 2026 IRS brackets and standard deductions (Rev. Proc. 2025‑32), including the federal Child Tax Credit ($2,200/child, phased out above $200,000 single/HoH or $400,000 MFJ gross income — approximated using gross income rather than a full AGI calculation). State figures use each state's published 2026 rate structure, simplified — no local/city taxes, itemized deductions, or phase‑outs beyond what's noted. State‑level dependent benefits vary enormously by state (some are credits, some are exemptions, amounts differ widely) and are not built in — enter your own state's per‑child amount in §1 if you know it; it's applied as a direct credit against state tax as an approximation. Head‑of‑household state brackets are approximated with single‑filer tables. Each person here is taxed as an individual filer (Single/HoH/MFJ) on their own combined job income; this tool does not combine two people's incomes into one joint return. A single job's "net" is that job's proportional share of its person's total tax and deductions by income share — not actual per‑employer withholding, which each employer calculates independently. Weekly/biweekly/semi‑monthly/monthly figures always divide by a fixed 52/26/24/12 — they stay consistent with each other even if "paid weeks" is reduced below 52 to model unpaid time off; hourly and daily figures reflect the rate actually earned while working.
+  </div>
+
+</div>
+
+<script src="/nav.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

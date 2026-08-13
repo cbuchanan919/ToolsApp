@@ -17,7 +17,7 @@
   <h1 class="tools-home-title">Tools</h1>
   <p class="tools-home-sub">Pick a tool to get started.</p>
 
-  <div id="tools-grid" class="tools-grid"></div>
+  <div id="tools-grid"></div>
 </main>
 
 <script src="/nav.js"></script>
@@ -32,12 +32,35 @@
       return;
     }
 
-    root.innerHTML = tools.map(function (tool) {
+    function cardHtml(tool) {
       return '<a class="tools-card" href="' + tool.href + '">' +
         '<div class="tools-card-title">' + tool.label + '</div>' +
         '<div class="tools-card-desc">' + tool.description + '</div>' +
         '</a>';
-    }).join("");
+    }
+
+    // Tools without a category render first, ungrouped. Categorized tools
+    // are grouped under a heading, in order of each category's first
+    // appearance in the registry.
+    var uncategorized = tools.filter(function (t) { return !t.category; });
+    var categories = [];
+    tools.forEach(function (t) {
+      if (t.category && categories.indexOf(t.category) === -1) categories.push(t.category);
+    });
+
+    var html = "";
+    if (uncategorized.length) {
+      html += '<div class="tools-grid">' + uncategorized.map(cardHtml).join("") + "</div>";
+    }
+    categories.forEach(function (cat) {
+      var items = tools.filter(function (t) { return t.category === cat; });
+      html += '<div class="tools-category">' +
+        '<div class="tools-category-heading">' + cat + "</div>" +
+        '<div class="tools-grid">' + items.map(cardHtml).join("") + "</div>" +
+        "</div>";
+    });
+
+    root.innerHTML = html;
   })();
 </script>
 </body>

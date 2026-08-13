@@ -145,6 +145,24 @@ input:focus-visible,
   gap: 16px;
 }
 
+.tools-category {
+  margin-top: 36px;
+}
+
+.tools-category:first-child {
+  margin-top: 0;
+}
+
+.tools-category-heading {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tools-muted);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--tools-line);
+}
+
 .tools-card {
   display: block;
   background: var(--tools-panel);

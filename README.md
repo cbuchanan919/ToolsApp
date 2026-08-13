@@ -9,8 +9,13 @@ shared "Tools" landing page and top nav bar. Currently:
 - **Income Calculator (Simple)** (`tools/Finance/IncomeCalculatorSimple/`) —
   converts between salary and hourly pay using real federal/state tax
   brackets, with a pay breakdown, offer comparator, and PTO value calculator.
-  `tools/Finance/` is a category folder — expect sibling calculators
-  (e.g. a multi-person version) alongside it later.
+- **Income Calculator (Multi)** (`tools/Finance/IncomeCalculatorMulti/`) —
+  models a whole household's pay across multiple people and jobs each with
+  their own filing status, deductions, and dependents, with combined
+  household tax and per-job breakdowns.
+
+`tools/Finance/` is a category folder — both calculators share it and are
+grouped under a "Finance" heading on the landing page (see below).
 
 ## Running it
 
@@ -63,7 +68,11 @@ upload feature to save files to `tools/Exam/exams/` (see below).
 2. Give the tool its own `app.js` / `styles.css` inside its folder —
    plain relative filenames are fine since the folder is the namespace.
 3. Add an entry to the `TOOLS` array in `nav.js` (`id`, `label`,
-   `href: "/tools/<ToolName>/"`, `description`).
+   `href: "/tools/<ToolName>/"`, `description`). If it belongs to a group
+   of related tools, add a matching `category` string (e.g. `"Finance"`)
+   to each entry in that group — the landing page groups cards under a
+   heading per category automatically; the nav bar itself stays a flat
+   list regardless.
 
 ## Adding an exam
 

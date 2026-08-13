@@ -3,7 +3,9 @@
 
   // Single source of truth for what tools exist on the site. Add an entry
   // here when a new tool is added, and it'll show up in the nav bar and
-  // on the Tools landing page.
+  // on the Tools landing page. `category` is optional — tools without one
+  // are shown ungrouped on the landing page; the nav bar itself stays a
+  // flat list regardless of category.
   var TOOLS = [
     {
       id: "exam",
@@ -16,6 +18,14 @@
       label: "Income Calculator (Simple)",
       href: "/tools/Finance/IncomeCalculatorSimple/",
       description: "Convert between salary and hourly pay, with real federal/state tax brackets and take-home breakdowns.",
+      category: "Finance",
+    },
+    {
+      id: "income-calculator-multi",
+      label: "Income Calculator (Multi)",
+      href: "/tools/Finance/IncomeCalculatorMulti/",
+      description: "Model a whole household's pay across multiple people and jobs, with combined tax, credits, and per-job breakdowns.",
+      category: "Finance",
     },
   ];
 
