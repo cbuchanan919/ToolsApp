@@ -28,6 +28,19 @@ function cleanupTestExam() {
   } catch (e) { /* manifest missing/unreadable — nothing to clean */ }
 }
 
+// Calendars this file creates via the API get their real generated ids
+// (unknown ahead of time), so track them here and delete the underlying
+// files directly — there's no DELETE /api/calendars/:id route to use.
+const CALENDARS_DIR = path.join(__dirname, '..', 'server', 'data', 'calendars');
+const createdTestCalendarIds = [];
+
+function cleanupTestCalendars() {
+  for (const id of createdTestCalendarIds) {
+    try { fs.unlinkSync(path.join(CALENDARS_DIR, `${id}.json`)); } catch (e) { /* wasn't there */ }
+  }
+  createdTestCalendarIds.length = 0;
+}
+
 let server, baseUrl;
 
 test.before(() => {
@@ -38,6 +51,7 @@ test.before(() => {
 
 test.after(() => {
   cleanupTestExam();
+  cleanupTestCalendars();
   server.close();
 });
 
@@ -175,5 +189,109 @@ test('POST /api/exams and DELETE /api/exams/:filename', async (t) => {
 
     const manifestAfter = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
     assert.ok(!manifestAfter.exams.some((e) => e.file === TEST_EXAM_FILE));
+  });
+});
+
+test('POST /api/calendars, GET /api/calendars/:id, PUT /api/calendars/:id', async (t) => {
+  await t.test('creating with no body produces an empty, valid calendar', async () => {
+    const res = await fetch(`${baseUrl}/api/calendars`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    assert.equal(res.status, 200);
+    const calendar = await res.json();
+    createdTestCalendarIds.push(calendar.id);
+    assert.match(calendar.id, /^cal-[a-f0-9]{20}$/);
+    assert.equal(calendar.userId, null);
+    assert.deepEqual(calendar.goals, []);
+    assert.deepEqual(calendar.entries, {});
+    assert.ok(calendar.createdAt);
+    assert.equal(calendar.createdAt, calendar.updatedAt);
+  });
+
+  await t.test('creating with a schema-invalid body is rejected with a 400', async () => {
+    const res = await fetch(`${baseUrl}/api/calendars`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goals: [{ id: 'x', name: 'X', color: 'not-a-color' }] })
+    });
+    assert.equal(res.status, 400);
+    const body = await res.json();
+    assert.equal(body.success, false);
+    assert.ok(Array.isArray(body.errors) && body.errors.length > 0);
+  });
+
+  await t.test('a full create/fetch/update/fetch round trip persists goals and entries', async () => {
+    const createRes = await fetch(`${baseUrl}/api/calendars`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        goals: [{ id: 'spanish', name: 'Spanish', color: '#e8a94c' }],
+        selectedGoalId: 'spanish'
+      })
+    });
+    const created = await createRes.json();
+    createdTestCalendarIds.push(created.id);
+
+    const fetchRes = await fetch(`${baseUrl}/api/calendars/${created.id}`);
+    assert.equal(fetchRes.status, 200);
+    const fetched = await fetchRes.json();
+    assert.equal(fetched.goals[0].name, 'Spanish');
+
+    const putRes = await fetch(`${baseUrl}/api/calendars/${created.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entries: { spanish: { '2026-08-01': true } } })
+    });
+    assert.equal(putRes.status, 200);
+    const updated = await putRes.json();
+    assert.deepEqual(updated.entries, { spanish: { '2026-08-01': true } });
+    // Fields omitted from the PUT body (goals, selectedGoalId) keep their
+    // previously stored value rather than being wiped out.
+    assert.equal(updated.goals[0].name, 'Spanish');
+    assert.equal(updated.selectedGoalId, 'spanish');
+    assert.notEqual(updated.updatedAt, created.updatedAt);
+
+    const refetchRes = await fetch(`${baseUrl}/api/calendars/${created.id}`);
+    const refetched = await refetchRes.json();
+    assert.deepEqual(refetched.entries, { spanish: { '2026-08-01': true } });
+  });
+
+  await t.test('GET on an unknown (but well-formed) id is a 404', async () => {
+    const res = await fetch(`${baseUrl}/api/calendars/cal-00000000000000000000`);
+    assert.equal(res.status, 404);
+  });
+
+  await t.test('a malformed id is rejected with a 400, not treated as a path', async () => {
+    const res = await fetch(`${baseUrl}/api/calendars/${encodeURIComponent('../../server/index')}`);
+    assert.equal(res.status, 400);
+  });
+
+  await t.test('PUT to an unknown id is a 404', async () => {
+    const res = await fetch(`${baseUrl}/api/calendars/cal-00000000000000000000`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entries: {} })
+    });
+    assert.equal(res.status, 404);
+  });
+});
+
+test('GET /api/calendars', async (t) => {
+  await t.test('lists every calendar on the server, including ones just created', async () => {
+    const createRes = await fetch(`${baseUrl}/api/calendars`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const created = await createRes.json();
+    createdTestCalendarIds.push(created.id);
+
+    const listRes = await fetch(`${baseUrl}/api/calendars`);
+    assert.equal(listRes.status, 200);
+    const all = await listRes.json();
+    assert.ok(Array.isArray(all));
+    assert.ok(all.some((c) => c.id === created.id));
   });
 });

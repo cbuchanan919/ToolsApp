@@ -13,9 +13,19 @@ shared "Tools" landing page and top nav bar. Currently:
   models a whole household's pay across multiple people and jobs each with
   their own filing status, deductions, and dependents, with combined
   household tax and per-job breakdowns.
+- **Investment Growth Calculator** (`public/tools/Finance/InvestmentGrowthCalculator/`) —
+  projects compound growth of a starting balance plus recurring
+  contributions, with a year-by-year chart/breakdown and a live "money left
+  over" estimate after taxes.
+- **Life Goals Calendar** (`public/tools/Personal/LifeGoalsCalendar/`) — a
+  habit-tracking calendar: define goals, mark days done, and see current/
+  best streaks. Calendar data is stored server-side (`GET`/`POST`/`PUT
+  /api/calendars`, see below), not in `localStorage` — the browser only
+  keeps a pointer (the calendar's id) so it can find its own calendar again.
 
-`public/tools/Finance/` is a category folder — both calculators share it and
-are grouped under a "Finance" heading on the landing page (see below).
+`public/tools/Finance/` and `public/tools/Personal/` are category folders —
+tools within them share the folder and are grouped under that heading on the
+landing page (see below).
 
 ## Running it
 
@@ -56,6 +66,16 @@ reference data shared across tools and the exam upload feature (see below).
 - `POST /api/exams`, `DELETE /api/exams/:filename` — the exam upload
   feature described below; ported from the previous Python server with the
   same validation and safety checks.
+- `GET /api/calendars`, `GET /api/calendars/:id`, `POST /api/calendars`,
+  `PUT /api/calendars/:id` — Life Goals Calendar's storage. Each calendar is
+  a JSON file (`{ id, userId, goals, entries, selectedGoalId, createdAt,
+  updatedAt }`) under `server/data/calendars/` (gitignored — runtime data,
+  not source). `GET /api/calendars` returns every calendar on the server
+  unfiltered; `userId` is always `null` today, reserved for an eventual
+  `?userId=` filter once there's real auth to source it from. The frontend
+  autosaves: on first load with no calendar id in `localStorage` it `POST`s
+  a new one and remembers the returned id, then `PUT`s the full calendar
+  after every change (goal added/renamed/removed, day toggled).
 
 ## Site structure
 

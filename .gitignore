@@ -1,3 +1,8 @@
 .DS_Store
 node_modules/
 .env
+
+# Runtime data (one file per calendar, written by POST/PUT /api/calendars) —
+# not source, and unlike the bundled/uploaded exam banks it isn't curated
+# content worth tracking.
+server/data/calendars/

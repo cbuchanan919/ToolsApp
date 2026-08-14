@@ -28,6 +28,7 @@ app.use('/api/exams', requireAuth, require('./routes/exams'));
 app.use('/api/states', requireAuth, require('./routes/states'));
 app.use('/api/federal', requireAuth, require('./routes/federal'));
 app.use('/api/tax-estimate', requireAuth, require('./routes/tax'));
+app.use('/api/calendars', requireAuth, require('./routes/calendars'));
 
 // Static site — everything under public/ (index.html, global.css, nav.js,
 // tools/**, etc.). Scoped to public/ specifically, not the whole repo root,

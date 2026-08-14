@@ -1,0 +1,79 @@
+/* Uses the shared --tools-* design tokens from /global.css (dark by
+   default, light via :root[data-theme="light"]) — no tool-local palette,
+   so this tool follows the site-wide theme toggle automatically. Body font
+   is already IBM Plex Mono via global.css, so there's no separate serif/mono
+   utility split here the way the original standalone version had. */
+.wrap { max-width: var(--tools-content-width); margin: 0 auto; padding: 28px 20px 60px; }
+
+.btn {
+  background: var(--tools-panel-alt);
+  border: 1px solid var(--tools-line);
+  color: var(--tools-text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--tools-accent); }
+.btn.primary { background: var(--tools-accent); border-color: var(--tools-accent); color: var(--tools-accent-contrast); font-weight: 600; }
+.btn.danger { border-color: var(--tools-danger); color: var(--tools-danger); }
+
+input[type="text"] {
+  background: var(--tools-bg);
+  border: 1px solid var(--tools-line);
+  color: var(--tools-text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+}
+
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; flex-shrink: 0; }
+.header-row { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.1em; color: var(--tools-muted); text-transform: uppercase; }
+.title { font-size: 26px; margin-top: 4px; }
+.server-count { font-size: 11px; color: var(--tools-muted); margin-top: 6px; }
+.save-flag { font-size: 11px; color: var(--tools-muted); }
+
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.tab {
+  display: flex; align-items: center;
+  background: var(--tools-panel); border: 1px solid var(--tools-line); color: var(--tools-muted);
+  font-family: inherit; font-size: 13px; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+}
+.tab.active { color: var(--tools-text); background: var(--tools-panel-alt); }
+.tab.ghost { border-style: dashed; }
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 20px; }
+.stat { background: var(--tools-panel); border: 1px solid var(--tools-line); border-radius: 8px; padding: 12px 14px; }
+.stat-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tools-muted); }
+.stat-value { font-size: 20px; margin-top: 4px; }
+
+.month-nav { display: flex; align-items: center; gap: 10px; margin-top: 24px; }
+.month-label { font-size: 19px; flex: 1; }
+.nav-btn { background: var(--tools-panel); border: 1px solid var(--tools-line); color: var(--tools-text); width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 15px; line-height: 1; }
+.nav-btn:hover { border-color: var(--tools-accent); }
+
+.weekday-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 14px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tools-muted); text-align: center; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 6px; }
+.cell {
+  aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--tools-line); background: var(--tools-panel);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; cursor: pointer; font-size: 11px; color: var(--tools-muted); padding: 0;
+}
+.cell:hover { border-color: var(--tools-accent); }
+.cell.empty { visibility: hidden; cursor: default; }
+.cell.future { opacity: 0.35; cursor: default; pointer-events: none; }
+.cell.today { border-color: var(--tools-accent); }
+.cell .daynum { position: absolute; top: 4px; left: 6px; font-size: 10px; }
+.pip { width: 40%; height: 40%; border-radius: 50%; margin-top: 4px; animation: life-goals-pip-pop 220ms ease; }
+@keyframes life-goals-pip-pop { from { transform: scale(0.5); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+
+.manage-panel { margin-top: 18px; background: var(--tools-panel); border: 1px solid var(--tools-line); border-radius: 10px; padding: 14px; }
+.goal-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--tools-line); }
+.goal-row:last-of-type { border-bottom: none; }
+.goal-row .name { flex: 1; font-size: 13px; }
+.empty-state { margin-top: 24px; color: var(--tools-muted); font-size: 13px; }
+.add-row { display: flex; gap: 8px; margin-top: 10px; }
+.add-row input { flex: 1; }

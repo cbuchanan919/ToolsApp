@@ -38,6 +38,13 @@
       description: "Project compound growth of a starting balance and recurring contributions, with a year-by-year chart and breakdown.",
       category: "Finance",
     },
+    {
+      id: "life-goals-calendar",
+      label: "Life Goals Calendar",
+      href: "/tools/Personal/LifeGoalsCalendar/",
+      description: "Track daily progress on personal goals with a habit calendar, streaks, and per-goal history.",
+      category: "Personal",
+    },
   ];
 
   window.ToolsRegistry = TOOLS;

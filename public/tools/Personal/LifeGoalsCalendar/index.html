@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Goals Calendar · Tools</title>
+<script src="/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/global.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<!-- #app is entirely JS-rendered (see app.js render()) — the header, tabs,
+     stats, and calendar grid are all one template re-rendered on every
+     state change, same structure as the original standalone version. -->
+<body data-tool="life-goals-calendar">
+
+<div id="tools-nav-root"></div>
+
+<header class="tools-status-bar">
+  <div class="tools-status-bar-id">
+    <span class="tools-status-dot" id="ledger-status-dot"></span>
+    <span class="tools-status-label">life-goals-calendar</span>
+  </div>
+  <div class="tools-status-right" id="ledger-status-right">idle</div>
+</header>
+
+<div class="wrap">
+  <div id="app"></div>
+</div>
+
+<script src="/nav.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
