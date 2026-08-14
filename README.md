@@ -20,13 +20,38 @@ grouped under a "Finance" heading on the landing page (see below).
 ## Running it
 
 ```
-python serve.py            # http://localhost:8000
-python serve.py 8080       # custom port
+npm install
+npm start                  # http://localhost:8000
+node server/index.js 8080  # custom port
 ```
 
-Standard library only — no pip installs required. Run it with `serve.py`
-rather than `python -m http.server` if you want the exam tool's in-app
-upload feature to save files to `tools/Exam/exams/` (see below).
+The frontend itself is still plain HTML/CSS/JS with no build step — the
+Node/Express server (`server/`) exists to serve it plus a small API for
+reference data shared across tools and the exam upload feature (see below).
+
+## Server / API
+
+- `server/index.js` — the app: serves the static site, mounts the API
+  routes below, and creates `tools/Exam/exams/` if it doesn't exist yet.
+- `server/data/` — the single source of truth for federal/state tax
+  brackets and each state's cost-of-living index. Both Finance tools fetch
+  from here (once, on page load) instead of hardcoding their own copies.
+- `GET /api/states`, `GET /api/federal` — raw reference data (state tax
+  brackets + cost-of-living index; federal brackets/deductions/FICA
+  constants). Fetched once per page load; tools compute locally/instantly
+  from the response rather than round-tripping on every interaction.
+- `POST /api/tax-estimate` — `{ income, state?, filingStatus? }` →
+  `{ federalTax, stateTax, ficaTax, totalTax, netAnnual, ... }`. The one
+  endpoint an interactive control calls live (debounced, with
+  `AbortController` cancelling stale requests) — used by the Investment
+  Growth Calculator's secondary "money left over" line, where a network
+  round-trip doesn't cost any perceived responsiveness.
+- `server/middleware/auth.js` — currently a no-op pass-through. Every route
+  above already runs through it, so real auth (an API key check, a JWT
+  verify) is a one-file change here later, not a routes/ refactor.
+- `POST /api/exams`, `DELETE /api/exams/:filename` — the exam upload
+  feature described below; ported from the previous Python server with the
+  same validation and safety checks.
 
 ## Site structure
 
@@ -203,6 +228,6 @@ You can either:
 | `letter` | yes      | string | Unique within the question (e.g. `"A"`, `"B"`, ...). |
 | `text`   | yes      | string | Non-empty. |
 
-Both the browser (on upload) and `serve.py` (on save) validate against this
-schema and report every error at once, so a rejected upload will tell you
-exactly which question/field is wrong.
+Both the browser (on upload) and the server (`server/lib/examValidation.js`,
+on save) validate against this schema and report every error at once, so a
+rejected upload will tell you exactly which question/field is wrong.

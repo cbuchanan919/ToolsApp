@@ -1,0 +1,16 @@
+{
+  "name": "toolsapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site of self-contained tools, served by a small Express API for shared reference data (tax brackets, cost-of-living index) and the Exam tool's upload feature.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

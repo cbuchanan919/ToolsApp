@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "toolsapp",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["serve.py", "8123"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server/index.js", "8123"],
       "port": 8123
     }
   ]

@@ -51,86 +51,21 @@
     householdSize: 1
   };
 
-  // ---------- state tax + cost-of-living data ----------
-  // Single-filer, standard-deduction-only slice of the same 2026 federal/
-  // state bracket data used by the Income Calculator tools (kept as a local
-  // copy per this site's convention of each tool folder being self-
-  // contained — see tools/Finance/IncomeCalculatorSimple/app.js for the
-  // full multi-filing-status version). `col` is each state's cost-of-living
-  // index (100 = national average), MERIC/C2ER 2025 annual average via
-  // https://worldpopulationreview.com/state-rankings/cost-of-living-index-by-state —
-  // used only to shift the savings-rate curve below, not the tax math.
-  const FEDERAL_BRACKETS_SINGLE = [[0,10],[12400,12],[50400,22],[105700,24],[201775,32],[256225,35],[640600,37]];
-  const FEDERAL_STD_DED_SINGLE = 16100;
-  const SS_RATE = 0.062, MEDICARE_RATE = 0.0145, ADDL_MEDICARE_RATE = 0.009, ADDL_MEDICARE_THRESHOLD_SINGLE = 200000;
-  const SS_WAGE_BASE = 184500;
+  // ---------- state + cost-of-living data ----------
+  // Fetched once from GET /api/states (server/data/states.js) — no longer
+  // hardcoded here or in IncomeCalculatorSimple/app.js, which fetches the
+  // same endpoint. `col` (100 = national average) drives the savings-rate
+  // curve below, entirely client-side/instant. The actual tax computation
+  // (federal + state brackets, FICA) now happens server-side via POST
+  // /api/tax-estimate — see updateLeftover() — since it only feeds the
+  // secondary "money left over" line, a debounced network call there costs
+  // nothing the user would notice, unlike the live rate curve.
+  let STATES = {};
 
-  const STATES = {
-    AL:{name:'Alabama', col:88.6, brackets:[[0,2],[500,4],[3000,5]], stdDed:3000},
-    AK:{name:'Alaska', col:124.9, brackets:null, stdDed:0},
-    AZ:{name:'Arizona', col:110.7, brackets:[[0,2.5]], stdDed:8350},
-    AR:{name:'Arkansas', col:89.6, brackets:[[0,2],[4600,3.9]], stdDed:2470},
-    CA:{name:'California', col:142.3, brackets:[[0,1],[11079,2],[26264,4],[41452,6],[57542,8],[72724,9.3],[371479,10.3],[445771,11.3],[742953,12.3],[1000000,13.3]], stdDed:5540},
-    CO:{name:'Colorado', col:102.7, brackets:[[0,4.4]], stdDed:16100},
-    CT:{name:'Connecticut', col:112.7, brackets:[[0,2],[10000,4.5],[50000,5.5],[100000,6],[200000,6.5],[250000,6.9],[500000,6.99]], stdDed:15000},
-    DE:{name:'Delaware', col:101.9, brackets:[[0,0],[2000,2.2],[5000,3.9],[10000,4.8],[20000,5.2],[25000,5.55],[60000,6.6]], stdDed:3250},
-    DC:{name:'Washington DC', col:138.8, brackets:[[0,4],[10000,6],[40000,6.5],[60000,8.5],[250000,9.25],[500000,9.75],[1000000,10.75]], stdDed:16100},
-    FL:{name:'Florida', col:102.2, brackets:null, stdDed:0},
-    GA:{name:'Georgia', col:92.5, brackets:[[0,5.19]], stdDed:12000},
-    HI:{name:'Hawaii', col:185.0, brackets:[[0,1.4],[9600,3.2],[14400,5.5],[19200,6.4],[24000,6.8],[36000,7.2],[48000,7.6],[125000,7.9],[175000,8.25],[225000,9],[275000,10],[325000,11]], stdDed:4400},
-    ID:{name:'Idaho', col:99.9, brackets:[[0,0],[4811,5.3]], stdDed:16100},
-    IL:{name:'Illinois', col:94.7, brackets:[[0,4.95]], stdDed:2925},
-    IN:{name:'Indiana', col:91.0, brackets:[[0,2.95]], stdDed:1000},
-    IA:{name:'Iowa', col:89.7, brackets:[[0,3.8]], stdDed:16100},
-    KS:{name:'Kansas', col:88.8, brackets:[[0,5.2],[23000,5.58]], stdDed:3605},
-    KY:{name:'Kentucky', col:92.5, brackets:[[0,3.5]], stdDed:3360},
-    LA:{name:'Louisiana', col:92.3, brackets:[[0,3]], stdDed:12875},
-    ME:{name:'Maine', col:113.0, brackets:[[0,5.8],[27399,6.75],[64849,7.15]], stdDed:8350},
-    MD:{name:'Maryland', col:115.4, brackets:[[0,2],[1000,3],[2000,4],[3000,4.75],[100000,5],[125000,5.25],[150000,5.5],[250000,5.75],[500000,6.25],[1000000,6.5]], stdDed:3350},
-    MA:{name:'Massachusetts', col:141.2, brackets:[[0,5],[1083150,9]], stdDed:4400},
-    MI:{name:'Michigan', col:90.1, brackets:[[0,4.25]], stdDed:5900},
-    MN:{name:'Minnesota', col:94.6, brackets:[[0,5.35],[33310,6.8],[109430,7.85],[203150,9.85]], stdDed:15300},
-    MS:{name:'Mississippi', col:87.3, brackets:[[0,0],[10000,4]], stdDed:2300},
-    MO:{name:'Missouri', col:89.0, brackets:[[0,0],[1348,2],[2696,2.5],[4044,3],[5392,3.5],[6740,4],[8088,4.5],[9436,4.7]], stdDed:16100},
-    MT:{name:'Montana', col:95.5, brackets:[[0,4.7],[47500,5.65]], stdDed:16100},
-    NE:{name:'Nebraska', col:92.6, brackets:[[0,2.46],[4130,3.51],[24760,4.55]], stdDed:8850},
-    NV:{name:'Nevada', col:100.2, brackets:null, stdDed:0},
-    NH:{name:'New Hampshire', col:111.4, brackets:null, stdDed:0},
-    NJ:{name:'New Jersey', col:115.1, brackets:[[0,1.4],[20000,1.75],[35000,3.5],[40000,5.53],[75000,6.37],[500000,8.97],[1000000,10.75]], stdDed:1000},
-    NM:{name:'New Mexico', col:93.7, brackets:[[0,1.5],[5500,3.2],[16500,4.3],[33500,4.7],[66500,4.9],[210000,5.9]], stdDed:16100},
-    NY:{name:'New York', col:125.1, brackets:[[0,3.9],[8500,4.4],[11700,5.15],[13900,5.4],[80650,5.9],[215400,6.85],[1077550,9.65],[5000000,10.3],[25000000,10.9]], stdDed:8000},
-    NC:{name:'North Carolina', col:97.8, brackets:[[0,3.99]], stdDed:12750},
-    ND:{name:'North Dakota', col:91.4, brackets:[[0,0],[48475,1.95],[244825,2.5]], stdDed:16100},
-    OH:{name:'Ohio', col:94.3, brackets:[[0,0],[26050,2.75]], stdDed:2400},
-    OK:{name:'Oklahoma', col:86.0, brackets:[[0,0],[3750,2.5],[4900,3.5],[7200,4.5]], stdDed:6350},
-    OR:{name:'Oregon', col:111.8, brackets:[[0,4.75],[4550,6.75],[11400,8.75],[125000,9.9]], stdDed:2910},
-    PA:{name:'Pennsylvania', col:97.2, brackets:[[0,3.07]], stdDed:0},
-    RI:{name:'Rhode Island', col:110.6, brackets:[[0,3.75],[82050,4.75],[186450,5.99]], stdDed:11200},
-    SC:{name:'South Carolina', col:94.7, brackets:[[0,0],[3640,3],[18230,6]], stdDed:8350},
-    SD:{name:'South Dakota', col:91.9, brackets:null, stdDed:0},
-    TN:{name:'Tennessee', col:90.3, brackets:null, stdDed:0},
-    TX:{name:'Texas', col:92.1, brackets:null, stdDed:0},
-    UT:{name:'Utah', col:102.2, brackets:[[0,4.5]], stdDed:0},
-    VT:{name:'Vermont', col:113.6, brackets:[[0,3.35],[49400,6.6],[119700,7.6],[249700,8.75]], stdDed:7650},
-    VA:{name:'Virginia', col:100.8, brackets:[[0,2],[3000,3],[5000,5],[17000,5.75]], stdDed:8750},
-    WA:{name:'Washington', col:114.1, brackets:null, stdDed:0},
-    WV:{name:'West Virginia', col:88.3, brackets:[[0,2.22],[10000,2.96],[25000,3.33],[40000,4.44],[60000,4.82]], stdDed:2000},
-    WI:{name:'Wisconsin', col:97.7, brackets:[[0,3.5],[15110,4.4],[51950,5.3],[332720,7.65]], stdDed:13960},
-    WY:{name:'Wyoming', col:93.7, brackets:null, stdDed:0}
-  };
-
-  function bracketTax(taxableIncome, brackets){
-    if (!brackets || taxableIncome <= 0) return 0;
-    let tax = 0;
-    for (let i = 0; i < brackets.length; i++){
-      const threshold = brackets[i][0];
-      const rate = brackets[i][1];
-      const nextThreshold = (i + 1 < brackets.length) ? brackets[i+1][0] : Infinity;
-      if (taxableIncome > threshold){
-        tax += (Math.min(taxableIncome, nextThreshold) - threshold) * (rate / 100);
-      } else break;
-    }
-    return tax;
+  async function loadStates(){
+    const res = await fetch('/api/states');
+    if (!res.ok) throw new Error('states request failed');
+    STATES = await res.json();
   }
 
   function populateStateSelect(){
@@ -142,27 +77,37 @@
     sel.innerHTML = options.join('');
   }
 
-  // Estimated federal + state income tax and FICA on gross income, single
-  // filer, standard deduction only — no credits, no pretax deductions, no
-  // local/city taxes. Used only for the "money left over" readout.
-  function estimateTax(income, stateCode){
-    const fedTaxable = Math.max(0, income - FEDERAL_STD_DED_SINGLE);
-    const federalTax = bracketTax(fedTaxable, FEDERAL_BRACKETS_SINGLE);
+  // Debounced POST /api/tax-estimate for the "money left over" line — the
+  // one place in this tool that calls the API live rather than fetching
+  // data once. AbortController cancels a stale in-flight request if the
+  // user changes the slider/state/household again before it resolves, so a
+  // slow earlier response can't overwrite a newer one.
+  let leftoverAbort = null;
+  let leftoverDebounce = null;
 
-    const state = STATES[stateCode];
-    let stateTax = 0;
-    if (state && state.brackets){
-      const stateTaxable = Math.max(0, income - state.stdDed);
-      stateTax = bracketTax(stateTaxable, state.brackets);
-    }
-
-    const ssTaxable = Math.min(income, SS_WAGE_BASE);
-    const socialSecurityTax = ssTaxable * SS_RATE;
-    const medicareTax = income * MEDICARE_RATE;
-    const addlMedicareTax = Math.max(0, income - ADDL_MEDICARE_THRESHOLD_SINGLE) * ADDL_MEDICARE_RATE;
-    const ficaTax = socialSecurityTax + medicareTax + addlMedicareTax;
-
-    return federalTax + stateTax + ficaTax;
+  function updateLeftover(income, stateCode, annualContribution, householdSize){
+    clearTimeout(leftoverDebounce);
+    leftoverDebounce = setTimeout(() => {
+      if (leftoverAbort) leftoverAbort.abort();
+      leftoverAbort = new AbortController();
+      fetch('/api/tax-estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ income, state: stateCode }),
+        signal: leftoverAbort.signal
+      })
+        .then((res) => { if (!res.ok) throw new Error('tax-estimate failed'); return res.json(); })
+        .then((result) => {
+          const leftoverAnnual = income - result.totalTax - annualContribution;
+          const stateLabel = stateCode === 'US' ? 'national average' : result.stateName;
+          incomeLeftoverEl.textContent = fmtMoney(leftoverAnnual) + '/yr (' + fmtMoney(leftoverAnnual / 12) + '/mo) left over after an estimated ' +
+            fmtMoney(result.totalTax) + '/yr in taxes and the contribution above — ' + stateLabel + ', household of ' + householdSize + ', single-filer tax estimate.';
+        })
+        .catch((e) => {
+          if (e.name === 'AbortError') return; // superseded by a newer request
+          incomeLeftoverEl.textContent = 'Could not estimate taxes right now — check your connection.';
+        });
+    }, 300);
   }
 
   // ---------- income-based suggestion ----------
@@ -218,13 +163,8 @@
     incomeSuggestionEl.textContent = rateText + ' savings rate → ' + fmtMoney(perPeriod) + '/' + FREQ_UNIT[periodsPerYear] +
       ' contribution · ' + fmtMoney(startingSuggestion) + ' starting';
 
-    const annualContribution = perPeriod * periodsPerYear;
-    const tax = estimateTax(income, stateCode);
-    const leftoverAnnual = income - tax - annualContribution;
-    const stateLabel = stateCode === 'US' ? 'national average' : STATES[stateCode].name;
-    const householdLabel = 'household of ' + householdSize;
-    incomeLeftoverEl.textContent = fmtMoney(leftoverAnnual) + '/yr (' + fmtMoney(leftoverAnnual / 12) + '/mo) left over after an estimated ' +
-      fmtMoney(tax) + '/yr in taxes and the contribution above — ' + stateLabel + ', ' + householdLabel + ', single-filer tax estimate.';
+    incomeLeftoverEl.textContent = 'Estimating taxes…';
+    updateLeftover(income, stateCode, perPeriod * periodsPerYear, householdSize);
   }
 
   function applyIncome(){
@@ -468,12 +408,33 @@
   }
 
   // ---------- init ----------
-  populateStateSelect();
-  loadSaved();
-  // Only updates the slider's own readout/suggestion text — never call
-  // applyIncome() here, since that would overwrite a saved (or manually
-  // edited) startingBalance/contribution with a recomputed value the user
-  // never asked for.
-  formatIncomeDisplay();
+  // The compound-interest simulation itself doesn't depend on fetched data
+  // (startingBalance/contribution defaults are already self-consistent —
+  // see the DEFAULTS comment above), so it renders immediately. Only the
+  // income-row controls wait on the states fetch, since the state dropdown
+  // has nothing to select from until then.
   renderAll();
+  incomeSliderEl.disabled = true;
+  incomeStateEl.disabled = true;
+  householdSizeEl.disabled = true;
+  householdMinusBtn.disabled = true;
+  householdPlusBtn.disabled = true;
+  incomeSuggestionEl.textContent = 'Loading income data…';
+
+  loadStates().then(() => {
+    incomeSliderEl.disabled = false;
+    incomeStateEl.disabled = false;
+    householdSizeEl.disabled = false;
+    householdMinusBtn.disabled = false;
+    householdPlusBtn.disabled = false;
+    populateStateSelect();
+    loadSaved();
+    // Only updates the slider's own readout/suggestion text — never call
+    // applyIncome() here, since that would overwrite a saved (or manually
+    // edited) startingBalance/contribution with a recomputed value the user
+    // never asked for.
+    formatIncomeDisplay();
+  }).catch(() => {
+    incomeSuggestionEl.textContent = 'Could not load income data — check your connection and reload.';
+  });
 })();

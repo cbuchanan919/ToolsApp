@@ -1,19 +1,34 @@
-# The app itself. Runs serve.py under systemd so it survives reboots/crashes.
+# The app itself. Runs the Node/Express server under systemd so it survives
+# reboots/crashes.
+#
+# Prerequisite: a system-wide Node install at /usr/bin/node. If `which node`
+# only finds an nvm install (nvm lives under $HOME, invisible to systemd —
+# see deploy-check.sh's PATH comment for why that also breaks npm there),
+# install Node system-wide via NodeSource on Debian first, e.g.:
+#   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+#   sudo apt-get install -y nodejs
+#   which node   # should now print /usr/bin/node
+# This is separate from any nvm install you use for your own interactive
+# shell/dev work — the two coexist fine, this just gives the service
+# account a fixed, systemd-visible path.
 #
 # Install:
 #   sudo cp toolsapp.service /etc/systemd/system/
 #   sudo systemctl enable --now toolsapp
 #
 # Adjust WorkingDirectory/ExecStart if the repo isn't checked out at
-# /opt/toolsapp, and User if you're not using a dedicated "toolsapp" user.
+# /opt/ToolsApp, User if you're not using a dedicated "toolsapp" user, and
+# the node path if `which node` doesn't return /usr/bin/node even after the
+# system-wide install above (rare, but possible on non-Debian systems).
 
 [Unit]
 Description=ToolsApp
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/ToolsApp/serve.py 8000
+ExecStart=/usr/bin/node /opt/ToolsApp/server/index.js
 WorkingDirectory=/opt/ToolsApp
+Environment=PORT=8000
 Restart=on-failure
 User=toolsapp
 
