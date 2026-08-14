@@ -2,16 +2,15 @@
   "exams": [
     {
       "file": "az900-practice-exam.json",
-      "label": "AZ-900 Practice Exam"
+      "label": "AZ-900 Practice Exam 1"
     },
     {
       "file": "az900-practice-test2.json",
-      "label": "AZ-900 Practice Test (Unofficial)"
+      "label": "AZ-900 Practice Exam 2"
     },
     {
       "file": "az104-practice-exam-01.json",
-      "label": "AZ-104: Microsoft Azure Administrator Practice Exam 1 (uploaded)",
-      "uploaded": true
+      "label": "AZ-104: Microsoft Azure Administrator Practice Exam 1"
     }
   ]
 }

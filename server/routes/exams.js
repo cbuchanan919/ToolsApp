@@ -7,6 +7,9 @@ const { validateExamSchema, slugify } = require('../lib/examValidation');
 
 const router = express.Router();
 
+// Upload (POST) and remove (DELETE) exam banks — the only routes that write
+// to disk. Bundled exams (no "uploaded" flag in the manifest) can never be
+// deleted through this API, only ones this route itself created.
 const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
 const EXAMS_DIR = path.join(PUBLIC_DIR, 'tools', 'Exam', 'exams');
 const MANIFEST_PATH = path.join(EXAMS_DIR, 'manifest.json');
@@ -20,6 +23,8 @@ function saveManifest(manifest) {
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
 }
 
+// Appends -2, -3, ... if the slugified name already exists, so two uploads
+// with the same title don't clobber each other.
 function uniqueFilename(desiredStem) {
   let candidate = desiredStem + '.json';
   let n = 1;

@@ -1,5 +1,6 @@
 'use strict';
 
+// Unit tests for the exam schema validator and slugify — no server involved.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { validateExamSchema, slugify } = require('../server/lib/examValidation');

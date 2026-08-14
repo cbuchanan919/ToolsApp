@@ -1,5 +1,6 @@
 'use strict';
 
+// Federal + state + FICA tax estimation, shared by POST /api/tax-estimate.
 const FEDERAL = require('../data/federal');
 const STATES = require('../data/states');
 

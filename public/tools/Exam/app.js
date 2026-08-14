@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  // Practice exam runner: pick an exam bank, work through it in study or
+  // test mode, then review results by domain.
+
   // ---------- state ----------
   const state = {
     manifest: null,        // { exams: [{file, label, uploaded?}] }
@@ -115,6 +118,9 @@
     renderUploadedList();
   }
 
+  // Falls back to an empty exam list (rather than leaving state.manifest
+  // null) so the rest of the UI can render normally and just show nothing
+  // selectable, instead of crashing on a null dereference.
   async function loadManifest() {
     try {
       const res = await fetch("exams/manifest.json?t=" + Date.now());
@@ -190,6 +196,8 @@
     }
   });
 
+  // Caches by filename so switching the dropdown back and forth, or the
+  // meta-preview-then-Start sequence, doesn't refetch the same exam twice.
   async function getExamByFile(file) {
     if (state.examCache[file]) return state.examCache[file];
     const res = await fetch("exams/" + file + "?t=" + Date.now());
@@ -354,6 +362,9 @@
   // ============================================================
   // Upload — validated client-side, then saved server-side into exams/
   // ============================================================
+  // Validates client-side first (instant feedback, no round trip for an
+  // obviously-broken file), then POSTs to the server, which re-validates
+  // independently and is the one that actually writes to disk.
   el.uploadInput.addEventListener("change", async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -399,7 +410,7 @@
       try {
         body = await res.json();
       } catch (parseErr) {
-        throw new Error("server response wasn't JSON — is serve.py running (not python -m http.server)?");
+        throw new Error("server response wasn't JSON — is the Node server (npm start) running?");
       }
 
       if (!res.ok || !body.success) {
@@ -425,7 +436,7 @@
       showUploadErrors([
         "Couldn't reach the server to save the file. " +
           (err && err.message ? err.message : "") +
-          " Make sure you're running this app with \"python serve.py\" (not python -m http.server), which is required for uploads to write to disk.",
+          " Make sure the Node server is running (\"npm start\"), which is required for uploads to write to disk.",
       ]);
       el.uploadStatus.hidden = true;
     }
@@ -543,6 +554,8 @@
   // ============================================================
   // Timer — counts up only while the tab is focused and visible
   // ============================================================
+  // The timer only counts up while this tab is visible and focused, so
+  // switching away to look something up doesn't inflate the recorded time.
   function isPageActive() {
     return document.visibilityState === "visible" && document.hasFocus();
   }
@@ -675,6 +688,8 @@
     });
   }
 
+  // "single" questions replace the selection; "multiple" toggles the
+  // clicked letter in/out of it.
   function toggleSelect(q, letter) {
     const answer = state.answers[state.currentIndex];
     if (q.type === "single") {
@@ -700,6 +715,9 @@
     el.feedbackTimeSensitive.hidden = !q.timeSensitive;
   }
 
+  // Study mode shows "Check" until answered, then swaps to "Next"; test
+  // mode skips the check step entirely and just enables "Next" once
+  // something's selected — this is where the two modes' flows diverge.
   function updateNavButtons(q, answer, locked) {
     const hasSelection = answer.selected.length > 0;
     const isLast = state.currentIndex === state.exam.questions.length - 1;
@@ -746,6 +764,8 @@
     renderQuestion();
   });
 
+  // Order shouldn't matter for multi-select questions, so both arrays are
+  // sorted before comparing.
   function answersMatch(selected, correct) {
     if (selected.length !== correct.length) return false;
     const a = [...selected].sort();
@@ -756,6 +776,8 @@
   // ============================================================
   // Results
   // ============================================================
+  // Tallies the overall score and a per-domain breakdown in one pass over
+  // the answered questions, then hands off to the results/review renderers.
   function finishExam() {
     stopTimer();
     setTopbarStatus("done");

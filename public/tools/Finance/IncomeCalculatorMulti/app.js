@@ -2,6 +2,9 @@
   "use strict";
   const $ = id => document.getElementById(id);
 
+  // Models a whole household's pay across multiple people, each with
+  // multiple jobs, combined federal/state/FICA tax, and per-job breakdowns.
+
   // ---------- formatting ----------
   const fmt = (n, decimals=0) => {
     if (!isFinite(n)) n = 0;
@@ -24,6 +27,11 @@
   const makeId = () => Math.random().toString(36).slice(2,9);
 
   // ---------- 2026 federal tax data ----------
+  // Still a local hardcoded copy, unlike IncomeCalculatorSimple and
+  // InvestmentGrowthCalculator, which now fetch the same data from
+  // GET /api/federal and GET /api/states (server/data/) — this file wasn't
+  // migrated when that API was introduced, so it's a third independent
+  // copy that can drift from the other two.
   const FEDERAL_BRACKETS = {
     single: [[0,10],[12400,12],[50400,22],[105700,24],[201775,32],[256225,35],[640600,37]],
     mfj:    [[0,10],[24800,12],[100800,22],[211400,24],[403550,32],[512450,35],[768700,37]],
@@ -123,6 +131,8 @@
     }, stdDed:{single:16100, mfj:32200}}
   };
 
+  // Walks the bracket table applying each tier's rate only to the income
+  // within it, stopping once taxableIncome is exhausted.
   function bracketTax(taxableIncome, brackets){
     if (taxableIncome <= 0) return { tax: 0, marginalRate: 0 };
     let tax = 0, marginalRate = brackets[0][1];
@@ -194,6 +204,9 @@
 
   function ssWageBase(){ return Math.max(0, parseNum($('ssWageBaseGlobal').value)) || 184500; }
 
+  // Federal Child Tax Credit: $2,200/child, reduced $50 per $1,000 of
+  // income above the filing-status threshold. State child credits vary too
+  // much to model generically — see the person's stateCreditPerChild field.
   const CTC_PER_CHILD = 2200;
   const CTC_PHASEOUT_THRESHOLD = { single: 200000, hoh: 200000, mfj: 400000 };
   function childTaxCredit(numChildren, grossAnnual, filingStatus){
@@ -208,6 +221,10 @@
     return credit;
   }
 
+  // The only place tax math happens — computed ONCE per person on their
+  // combined income across all jobs (grossOverride lets the comparator
+  // reuse this for a hypothetical single-job income), never per job, since
+  // brackets are inherently a whole-income calculation.
   function computeTaxesForPerson(person, grossOverride){
     const grossAnnual = grossOverride !== undefined ? grossOverride : personGrossAnnual(person);
     const filingStatus = person.filingStatus;
@@ -449,6 +466,9 @@
     const infoBanner = $('infoBanner');
 
     if (currentView.startsWith('job:')){
+      // There's no real per-job tax figure (see computeTaxesForPerson) — a
+      // job's "net" here is the person's total net allocated by that job's
+      // share of their gross income, not actual employer withholding.
       const jobId = currentView.slice(4);
       const found = findJobAndPerson(jobId);
       if (!found){ currentView = 'household'; viewSelect.value = 'household'; return renderView(); }
@@ -718,6 +738,10 @@
   function comparatorScheduleDefault(){ return { hoursPerWeek: 40, daysPerWeek: 5, weeksPerYear: 52 }; }
   function cmpToAnnual(type, val, sch){ return type === 'hourly' ? annualFromHourly(Math.max(0,val), sch) : Math.max(0,val); }
 
+  // "Standalone" evaluates both offers as a plain single filer with zero
+  // deductions; picking a person instead reuses their actual filing
+  // status/state/deductions via computeTaxesForPerson(person, override), so
+  // the comparison reflects what a raise would really net them.
   function cmpProfilePerson(){
     const v = cmpProfile.value;
     if (v === 'standalone') return null;

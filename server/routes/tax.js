@@ -5,6 +5,8 @@ const { estimateTax } = require('../lib/taxCalc');
 
 const router = express.Router();
 
+// The one endpoint the frontend calls live rather than fetching once —
+// InvestmentGrowthCalculator's debounced "money left over" line.
 router.post('/', (req, res) => {
   const body = req.body || {};
 

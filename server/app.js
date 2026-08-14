@@ -1,5 +1,7 @@
 'use strict';
 
+// Builds the Express app: API routes + static site. Exported (not started
+// here) so both index.js and the test suite can use it.
 const express = require('express');
 const fs = require('fs');
 const path = require('path');

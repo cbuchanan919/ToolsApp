@@ -1,5 +1,8 @@
 'use strict';
 
+// HTTP-level tests against the real Express app, started on an ephemeral
+// port below — covers every API route including a full exam upload/delete
+// round trip against the real exams directory (with cleanup).
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');

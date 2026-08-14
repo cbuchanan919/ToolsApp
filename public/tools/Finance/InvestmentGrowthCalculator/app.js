@@ -2,6 +2,9 @@
   "use strict";
   const $ = id => document.getElementById(id);
 
+  // Projects compound growth of a starting balance + recurring
+  // contributions, with an optional income-based suggestion for both.
+
   // ---------- formatting ----------
   const fmt = (n, decimals=0) => {
     if (!isFinite(n)) n = 0;
@@ -149,6 +152,10 @@
   const FREQ_ROUND_STEP = { '12': 10, '4': 25, '1': 100 };
   const FREQ_MULTIPLIER = { '12': 1, '4': 3, '1': 12 };
 
+  // Updates the slider's own readout/suggestion/leftover text only — never
+  // writes to Starting balance/Contribution. Called on every input change,
+  // including ones that don't come from the slider itself (e.g. changing
+  // frequency), so the suggestion text never goes stale.
   function formatIncomeDisplay(){
     const income = parseNum(incomeSliderEl.value);
     incomeValueEl.textContent = fmtMoney(income);
@@ -167,6 +174,9 @@
     updateLeftover(income, stateCode, perPeriod * periodsPerYear, householdSize);
   }
 
+  // Unlike formatIncomeDisplay(), this actually overwrites Starting
+  // balance/Contribution — only called from the slider/state/household
+  // controls themselves, never from editing those two fields directly.
   function applyIncome(){
     formatIncomeDisplay();
     const income = parseNum(incomeSliderEl.value);
@@ -195,6 +205,10 @@
   }
 
   // ---------- simulation ----------
+  // Simulates period-by-period (not a closed-form formula) so the
+  // year-by-year table is exact: each period adds the contribution then
+  // compounds the whole balance, and the contribution itself grows by
+  // increasePct once per year, not per period.
   function simulate(){
     const startingBalance = Math.max(0, parseNum(startingBalanceEl.value));
     const baseContribution = Math.max(0, parseNum(contributionEl.value));
@@ -256,6 +270,9 @@
   }
 
   // ---------- render: chart ----------
+  // Hand-built SVG (no charting library) — two stacked area fills (total
+  // balance, cumulative contributions) sharing one x/y coordinate mapper,
+  // so the gap between them visually reads as "growth."
   function renderChart(result){
     const points = result.points;
     const n = points.length - 1;

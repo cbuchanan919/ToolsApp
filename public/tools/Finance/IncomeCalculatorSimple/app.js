@@ -2,6 +2,9 @@
   "use strict";
   const $ = id => document.getElementById(id);
 
+  // Converts between salary and hourly pay, with a full tax breakdown,
+  // an offer comparator, and a PTO value calculator built on top.
+
   // ---------- formatting ----------
   const fmt = (n, decimals=0) => {
     if (!isFinite(n)) n = 0;
@@ -50,6 +53,8 @@
   }
 
   // ---------- progressive bracket tax function ----------
+  // Walks the bracket table applying each tier's rate only to the income
+  // that falls within it, stopping once taxableIncome is exhausted.
   function bracketTax(taxableIncome, brackets){
     if (taxableIncome <= 0) return { tax: 0, marginalRate: 0 };
     let tax = 0, marginalRate = brackets[0][1];
@@ -66,6 +71,8 @@
     return { tax, marginalRate };
   }
 
+  // Groups states into three <optgroup>s by tax structure (none/flat/
+  // progressive) rather than one flat alphabetical list.
   function populateStateSelect(){
     const sel = $('stateSelect');
     const groups = { none: [], flat: [], bracket: [] };
@@ -189,6 +196,8 @@
   otIncludeLabel.addEventListener('click', toggleOtInclude);
   ['otHours','otMultiplier'].forEach(id => $(id).addEventListener('input', renderAll));
 
+  // Extra annual pay from OT hours at the configured multiplier, on top of
+  // (not instead of) the base salary.
   function overtimeExtraAnnual(sch, hourlyRate){
     if (!otOn) return 0;
     const otHours = parseNum($('otHours').value);
@@ -198,6 +207,10 @@
   }
 
   // ---------- core tax computation ----------
+  // Pretax retirement/health/HSA reduce taxable income for federal + state
+  // (retirement doesn't reduce the FICA base, health/HSA does), then
+  // progressive brackets apply — or, in override mode, flat percentages
+  // bypass the brackets entirely.
   function computeTaxes(grossAnnual){
     const filingStatus = filingStatusEl.value;
     const stateCode = stateSelectEl.value;
@@ -261,6 +274,9 @@
     };
   }
 
+  // Base salary plus OT, but only if OT is on AND explicitly folded into
+  // totals — OT can be modeled and shown without affecting the headline
+  // numbers.
   function currentGrossAnnual(){
     const sch = schedule();
     const hourlyRate = hourlyFromAnnual(annualSalary, sch);
@@ -341,6 +357,9 @@
 
   function toAnnual(type, val, sch){ return type === 'hourly' ? annualFromHourly(Math.max(0,val), sch) : Math.max(0,val); }
 
+  // Both offers are taxed through the same filing status/state/deductions
+  // configured above (computeTaxes reads those globals) — this compares
+  // two salaries for one person, not two independently-configured people.
   function renderComparator(){
     const sch = schedule();
     const aAnnual = toAnnual(cmpAType.value, parseNum(cmpAVal.value), sch);

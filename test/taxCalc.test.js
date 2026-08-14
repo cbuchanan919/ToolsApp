@@ -1,5 +1,6 @@
 'use strict';
 
+// Unit tests for the pure tax-calculation functions — no server involved.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { bracketTax, estimateTax } = require('../server/lib/taxCalc');

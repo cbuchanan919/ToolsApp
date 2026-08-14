@@ -1,5 +1,7 @@
 'use strict';
 
+// Entry point — just starts the app built in app.js (kept separate so
+// tests can import the app without binding a real port).
 const app = require('./app');
 
 // Positional CLI arg takes priority (matches the old `python serve.py 8080`

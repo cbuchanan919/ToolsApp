@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  // Renders the universal nav bar (and the theme toggle within it) on every
+  // page that has a #tools-nav-root div.
+
   // Single source of truth for what tools exist on the site. Add an entry
   // here when a new tool is added, and it'll show up in the nav bar and
   // on the Tools landing page. `category` is optional — tools without one
