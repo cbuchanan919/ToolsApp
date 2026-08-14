@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Growth Calculator · Tools</title>
+<script src="/theme-init.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/global.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-tool="investment-growth-calculator">
+
+<div id="tools-nav-root"></div>
+
+<header class="tools-status-bar">
+  <div class="tools-status-bar-id">
+    <span class="tools-status-dot"></span>
+    <span class="tools-status-label">investment-growth-calculator</span>
+  </div>
+  <div class="tools-status-right">compound interest</div>
+</header>
+
+<div class="masthead">
+  <h1>Growth Ledger</h1>
+  <p>Project how a starting balance and recurring contributions compound over time. Set a return rate, a contribution schedule, and a time horizon — see the year-by-year split between what you put in and what it earned.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- INPUTS -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§1</span>Inputs</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <div class="income-row">
+        <div class="field-label-row"><label for="incomeSlider">Household income <span class="income-optional">(optional)</span></label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About household income">?</button><span class="tooltip" role="tooltip">Suggests a Starting balance and Contribution for this income level using a simplified savings-rate rule of thumb, loosely based on commonly cited retirement-savings guidance (e.g. Fidelity's rule of thumb to save around 15% of income): a lower rate for below-median incomes, since more goes to essentials, rising toward 15-20% near/above the median, then the dollar contribution caps near the IRS's annual 401(k) elective-deferral limit (~$24k/yr) so it doesn't scale unrealistically at high incomes. State and household size both shift that rate curve further — see their own tooltips below for how and why. Moving the slider, or changing state/household size, overwrites Starting balance and Contribution below; editing those fields directly is unaffected until you do.</span></span></div>
+        <div class="income-slider-controls">
+          <input type="range" id="incomeSlider" min="20000" max="300000" step="10" value="80610">
+          <div class="income-readout"><span id="incomeValue">$80,610</span><span class="income-sub">median U.S. household income</span></div>
+        </div>
+        <div class="income-state-row">
+          <label for="incomeState">State</label>
+          <select id="incomeState"></select>
+          <span class="help-wrap"><button type="button" class="help-icon" aria-label="About state cost of living and taxes">?</button><span class="tooltip" role="tooltip">The cost-of-living index (100 = national average) is the Missouri Economic Research and Information Center's (MERIC) Cost of Living Data Series via the Council for Community and Economic Research (C2ER), 2025 annual average — it only shifts the suggested savings rate above, not real prices. The tax estimate below reuses the same 2026 federal/state bracket data as this site's Income Calculator tools, but simplified to a single filer with the standard deduction only — no credits, dependents, or local/city taxes.</span></span>
+        </div>
+        <div class="income-household-row">
+          <label for="householdSize">Household size</label>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" id="householdMinus" aria-label="Decrease household size">−</button>
+            <input type="number" id="householdSize" value="1" min="1" max="8" step="1">
+            <button type="button" class="stepper-btn" id="householdPlus" aria-label="Increase household size">+</button>
+          </div>
+          <span class="help-wrap"><button type="button" class="help-icon" aria-label="About household size">?</button><span class="tooltip" role="tooltip">Shifts the same income breakpoints used above, since a bigger household needs more income to cover the same essentials — using the square-root equivalence scale (income effectively divided by √household size), a simpler alternative to the full OECD-modified equivalence scale that's also used in OECD and cross-country income-comparison research. It reflects that costs don't multiply 1:1 per person — a family of four shares one home instead of needing four. Doesn't change the tax estimate below, which stays single-filer regardless of household size.</span></span>
+        </div>
+        <p class="income-suggestion" id="incomeSuggestion"></p>
+        <p class="income-leftover" id="incomeLeftover"></p>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label-row"><label for="startingBalance">Starting balance</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About starting balance">?</button><span class="tooltip" role="tooltip">The amount already invested today, before any new contributions.</span></span></div>
+          <input type="number" id="startingBalance" value="6000" min="0" step="100">
+        </div>
+        <div class="field">
+          <div class="field-label-row"><label for="contribution" id="contributionLabel">Contribution / month</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About contribution amount">?</button><span class="tooltip" role="tooltip">How much you add each period, on top of what's already compounding.</span></span></div>
+          <input type="number" id="contribution" value="1010" min="0" step="10">
+        </div>
+        <div class="field">
+          <div class="field-label-row"><label for="freqSelect">Contribution &amp; compounding frequency</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About contribution and compounding frequency">?</button><span class="tooltip" role="tooltip">How often you contribute — and, in this calculator, also how often growth compounds. Monthly means smaller contributions start compounding sooner than an annual lump sum.</span></span></div>
+          <select id="freqSelect">
+            <option value="12" selected>Monthly</option>
+            <option value="4">Quarterly</option>
+            <option value="1">Annually</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label-row"><label for="contribIncrease">Contribution increase / year</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About contribution increase">?</button><span class="tooltip" role="tooltip">Raises your contribution by this percentage at the start of each year — e.g. to mirror an annual raise or cost-of-living adjustment.</span></span></div>
+          <input type="number" id="contribIncrease" value="0" min="0" step="0.5"><div class="unit-note">%, models a raise added to savings</div>
+        </div>
+        <div class="field">
+          <div class="field-label-row"><label for="returnRate">Expected annual return</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About expected annual return">?</button><span class="tooltip" role="tooltip">The average yearly return you expect, before inflation. Actual year-to-year returns vary widely — this assumes a flat, constant rate.</span></span></div>
+          <input type="number" id="returnRate" value="7" step="0.1"><div class="unit-note">% nominal (like an APR)</div><div class="unit-note" id="apyNote"></div>
+        </div>
+        <div class="field">
+          <div class="field-label-row"><label for="years">Time horizon</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About time horizon">?</button><span class="tooltip" role="tooltip">How many years the money stays invested and compounding.</span></span></div>
+          <input type="number" id="years" value="20" min="1" max="75" step="1"><div class="unit-note">years</div>
+        </div>
+      </div>
+      <p class="section-sub" style="margin-top:14px;">Contributions and compounding both happen on the frequency picked above — e.g. "Monthly" contributes and compounds every month using 1/12 of the annual return rate.</p>
+
+      <div class="row-toggle">
+        <div class="switch" id="inflationSwitch"><div class="knob"></div></div>
+        <label id="inflationLabel">Adjust for inflation</label>
+        <span class="help-wrap"><button type="button" class="help-icon" aria-label="About inflation adjustment">?</button><span class="tooltip" role="tooltip">Shows the final balance's purchasing power in today's dollars, alongside the nominal figure.</span></span>
+      </div>
+      <div id="inflationFields" style="display:none;">
+        <div class="field-grid">
+          <div class="field">
+            <div class="field-label-row"><label for="inflationRate">Inflation rate</label><span class="help-wrap"><button type="button" class="help-icon" aria-label="About inflation rate">?</button><span class="tooltip" role="tooltip">The assumed average annual inflation rate, used to discount the nominal final balance back to today's purchasing power.</span></span></div>
+            <input type="number" id="inflationRate" value="3" step="0.1"><div class="unit-note">%/year</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- SUMMARY -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§2</span>Summary</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <div class="pto-cards">
+        <div class="pto-card"><div class="lab">Final balance</div><div class="val" id="finalBalance">$0</div></div>
+        <div class="pto-card"><div class="lab">Total contributed</div><div class="val" id="totalContributed">$0</div></div>
+        <div class="pto-card"><div class="lab">Total growth</div><div class="val ok" id="totalGrowth">$0</div></div>
+        <div class="pto-card" id="realValueCard" style="display:none;"><div class="lab">Real value (today's dollars)</div><div class="val" id="realValue">$0</div></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- CHART -->
+  <details class="ledger-section" open>
+    <summary><span><span class="no">§3</span>Growth Chart</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="swatch contrib"></span>Contributions</span>
+        <span class="legend-item"><span class="swatch growth"></span>Growth</span>
+      </div>
+      <div id="chartWrap" class="chart-wrap"></div>
+    </div>
+  </details>
+
+  <!-- BREAKDOWN -->
+  <details class="ledger-section">
+    <summary><span><span class="no">§4</span>Year-by-Year Breakdown</span><span class="chev">▸</span></summary>
+    <div class="section-body">
+      <table class="ledger-table">
+        <thead><tr><th>Year</th><th>Starting balance</th><th>Contributions</th><th>Interest earned</th><th>Ending balance</th></tr></thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+    </div>
+  </details>
+
+  <div class="footer-bar">
+    <div>
+      <button class="btn primary" id="saveBtn">Save settings</button>
+      <button class="btn" id="resetBtn">Reset to defaults</button>
+    </div>
+    <div class="save-note" id="saveNote">Not yet saved this browser.</div>
+  </div>
+
+  <div class="disclaimer">
+    <b>This is an estimate, not investment advice.</b> It assumes a constant annual return applied evenly across every period, which real markets never do — actual returns vary year to year and this can't predict them. It doesn't account for taxes, fees, expense ratios, or contribution limits. Inflation adjustment uses a single constant rate for the whole horizon. Verify anything that matters with a financial advisor.
+  </div>
+
+</div>
+
+<script src="/nav.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

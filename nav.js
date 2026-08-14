@@ -28,6 +28,13 @@
       description: "Model a whole household's pay across multiple people and jobs, with combined tax, credits, and per-job breakdowns.",
       category: "Finance",
     },
+    {
+      id: "investment-growth-calculator",
+      label: "Investment Growth Calculator",
+      href: "/tools/Finance/InvestmentGrowthCalculator/",
+      description: "Project compound growth of a starting balance and recurring contributions, with a year-by-year chart and breakdown.",
+      category: "Finance",
+    },
   ];
 
   window.ToolsRegistry = TOOLS;
