@@ -7,8 +7,8 @@ const { validateExamSchema, slugify } = require('../lib/examValidation');
 
 const router = express.Router();
 
-const BASE_DIR = path.join(__dirname, '..', '..');
-const EXAMS_DIR = path.join(BASE_DIR, 'tools', 'Exam', 'exams');
+const PUBLIC_DIR = path.join(__dirname, '..', '..', 'public');
+const EXAMS_DIR = path.join(PUBLIC_DIR, 'tools', 'Exam', 'exams');
 const MANIFEST_PATH = path.join(EXAMS_DIR, 'manifest.json');
 
 function loadManifest() {

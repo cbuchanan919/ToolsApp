@@ -3,19 +3,19 @@
 A local, static site hosting a small suite of single-page tools, behind a
 shared "Tools" landing page and top nav bar. Currently:
 
-- **Exam** (`tools/Exam/`) — a practice exam runner. Load a bank of
+- **Exam** (`public/tools/Exam/`) — a practice exam runner. Load a bank of
   multiple-choice questions, take it in **study** mode (instant feedback) or
   **test** mode (scored at the end), and review results by domain.
-- **Income Calculator (Simple)** (`tools/Finance/IncomeCalculatorSimple/`) —
+- **Income Calculator (Simple)** (`public/tools/Finance/IncomeCalculatorSimple/`) —
   converts between salary and hourly pay using real federal/state tax
   brackets, with a pay breakdown, offer comparator, and PTO value calculator.
-- **Income Calculator (Multi)** (`tools/Finance/IncomeCalculatorMulti/`) —
+- **Income Calculator (Multi)** (`public/tools/Finance/IncomeCalculatorMulti/`) —
   models a whole household's pay across multiple people and jobs each with
   their own filing status, deductions, and dependents, with combined
   household tax and per-job breakdowns.
 
-`tools/Finance/` is a category folder — both calculators share it and are
-grouped under a "Finance" heading on the landing page (see below).
+`public/tools/Finance/` is a category folder — both calculators share it and
+are grouped under a "Finance" heading on the landing page (see below).
 
 ## Running it
 
@@ -23,6 +23,7 @@ grouped under a "Finance" heading on the landing page (see below).
 npm install
 npm start                  # http://localhost:8000
 node server/index.js 8080  # custom port
+npm test                   # runs test/ via Node's built-in test runner
 ```
 
 The frontend itself is still plain HTML/CSS/JS with no build step — the
@@ -31,8 +32,11 @@ reference data shared across tools and the exam upload feature (see below).
 
 ## Server / API
 
-- `server/index.js` — the app: serves the static site, mounts the API
-  routes below, and creates `tools/Exam/exams/` if it doesn't exist yet.
+- `server/index.js` / `server/app.js` — the app: serves `public/` as static
+  content, mounts the API routes below, and creates
+  `public/tools/Exam/exams/` if it doesn't exist yet. Static serving is
+  scoped to `public/` specifically (not the repo root) so `server/`,
+  `test/`, `deploy/`, `package.json`, etc. are never reachable over HTTP.
 - `server/data/` — the single source of truth for federal/state tax
   brackets and each state's cost-of-living index. Both Finance tools fetch
   from here (once, on page load) instead of hardcoding their own copies.
@@ -55,21 +59,28 @@ reference data shared across tools and the exam upload feature (see below).
 
 ## Site structure
 
-- `index.html` / `global.css` — the Tools landing page: shared design
-  tokens, the universal nav bar, and a card grid linking to each tool.
-- `nav.js` — single source of truth for the tools registry (id, label,
-  href, description). Injects the nav bar into any page with a
+Everything under `public/` is served as static content by
+`express.static()` — nothing outside it is (see the Server / API section
+above). Root-absolute paths like `/global.css` therefore resolve relative
+to `public/`, not the repo root.
+
+- `public/index.html` / `public/global.css` — the Tools landing page:
+  shared design tokens, the universal nav bar, and a card grid linking to
+  each tool.
+- `public/nav.js` — single source of truth for the tools registry (id,
+  label, href, description). Injects the nav bar into any page with a
   `<div id="tools-nav-root"></div>`, and the landing page reads the same
   registry to render its card grid. Shared assets (`global.css`, `nav.js`)
-  are referenced with root-absolute paths (`/global.css`, `/nav.js`) so
-  they resolve correctly no matter how deep a tool's folder is nested.
-- `tools/<ToolName>/` — one folder per tool, e.g. `tools/Exam/index.html`,
-  `app.js`, `styles.css`, plus any tool-owned data (`tools/Exam/exams/`).
-  The folder is the namespace, so tool-owned files don't need prefixing.
-  When a group of tools are related (e.g. multiple finance calculators),
-  nest them under a category folder instead:
-  `tools/<Category>/<ToolName>/index.html`, as with
-  `tools/Finance/IncomeCalculatorSimple/`.
+  are referenced from tool pages with root-absolute paths (`/global.css`,
+  `/nav.js`) so they resolve correctly no matter how deep a tool's folder
+  is nested.
+- `public/tools/<ToolName>/` — one folder per tool, e.g.
+  `public/tools/Exam/index.html`, `app.js`, `styles.css`, plus any
+  tool-owned data (`public/tools/Exam/exams/`). The folder is the
+  namespace, so tool-owned files don't need prefixing. When a group of
+  tools are related (e.g. multiple finance calculators), nest them under a
+  category folder instead: `public/tools/<Category>/<ToolName>/index.html`,
+  as with `public/tools/Finance/IncomeCalculatorSimple/`.
 - Every tool shares one visual design via the `--tools-*` custom properties
   defined in `global.css` (see "Theming" below) — a tool's own `styles.css`
   should style layout/components using those tokens, not introduce its own
@@ -78,17 +89,19 @@ reference data shared across tools and the exam upload feature (see below).
 
 ### Adding a new tool
 
-1. Create `tools/<ToolName>/index.html` (or `tools/<Category>/<ToolName>/index.html`
-   if it belongs to a group) with `<body data-tool="<id>">`, a
+1. Create `public/tools/<ToolName>/index.html` (or
+   `public/tools/<Category>/<ToolName>/index.html` if it belongs to a
+   group) with `<body data-tool="<id>">`, a
    `<div id="tools-nav-root"></div>` right after `<body>`, and, in this
    order in `<head>`: `<script src="/theme-init.js"></script>` (must run
    before any CSS paints — see "Theming"), the IBM Plex Mono Google Fonts
-   `<link>` tags (copy from `tools/Exam/index.html` — the nav bar's font is
-   pinned to IBM Plex Mono in `global.css`, but the font still has to be
-   loaded on every page for that to actually render instead of falling
-   back to a system mono font), then `<link rel="stylesheet" href="/global.css">`
-   before the tool's own stylesheet. Load `<script src="/nav.js"></script>`
-   before the tool's own script.
+   `<link>` tags (copy from `public/tools/Exam/index.html` — the nav bar's
+   font is pinned to IBM Plex Mono in `global.css`, but the font still has
+   to be loaded on every page for that to actually render instead of
+   falling back to a system mono font), then
+   `<link rel="stylesheet" href="/global.css">` before the tool's own
+   stylesheet. Load `<script src="/nav.js"></script>` before the tool's
+   own script.
 2. Give the tool its own `app.js` / `styles.css` inside its folder —
    plain relative filenames are fine since the folder is the namespace.
    Style it using `var(--tools-*)` tokens (see "Theming") rather than
@@ -145,8 +158,8 @@ universal nav bar) and keeps `localStorage` in sync as the user clicks it;
 
 ## Adding an exam
 
-Exam banks are JSON files in `tools/Exam/exams/`, listed in
-`tools/Exam/exams/manifest.json`:
+Exam banks are JSON files in `public/tools/Exam/exams/`, listed in
+`public/tools/Exam/exams/manifest.json`:
 
 ```json
 {
@@ -157,10 +170,10 @@ Exam banks are JSON files in `tools/Exam/exams/`, listed in
 ```
 
 You can either:
-- Drop a `.json` file in `tools/Exam/exams/` and add an entry to the
+- Drop a `.json` file in `public/tools/Exam/exams/` and add an entry to the
   manifest by hand, or
 - Use the **Upload exam** control on the start screen — the server validates
-  the file, writes it to `tools/Exam/exams/`, and adds a manifest entry
+  the file, writes it to `public/tools/Exam/exams/`, and adds a manifest entry
   automatically (flagged `"uploaded": true`, which is what lets it be
   deleted again from the UI).
 
