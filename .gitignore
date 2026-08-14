@@ -6,3 +6,7 @@ node_modules/
 # not source, and unlike the bundled/uploaded exam banks it isn't curated
 # content worth tracking.
 server/data/calendars/
+
+# Local deploy state (see deploy-check.sh) — the last commit that was fully
+# pulled/installed/restarted successfully on this machine, not source.
+deploy/.last-deployed
