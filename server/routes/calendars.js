@@ -46,16 +46,26 @@ function listCalendars() {
 // always null today, set aside for exactly this); an eventual `?userId=`
 // filter just needs to narrow this same list once real auth exists.
 router.get('/', (req, res) => {
-  res.json(listCalendars());
+  try {
+    res.json(listCalendars());
+  } catch (e) {
+    console.error('GET /api/calendars failed:', e);
+    res.status(500).json({ success: false, errors: [`Server couldn't list calendars: ${e.message}`] });
+  }
 });
 
 router.get('/:id', (req, res) => {
   if (!isSafeCalendarId(req.params.id)) {
     return res.status(400).json({ success: false, errors: ['Invalid calendar id.'] });
   }
-  const calendar = loadCalendar(req.params.id);
-  if (!calendar) return res.status(404).json({ success: false, errors: ['No such calendar.'] });
-  res.json(calendar);
+  try {
+    const calendar = loadCalendar(req.params.id);
+    if (!calendar) return res.status(404).json({ success: false, errors: ['No such calendar.'] });
+    res.json(calendar);
+  } catch (e) {
+    console.error(`GET /api/calendars/${req.params.id} failed:`, e);
+    res.status(500).json({ success: false, errors: [`Server couldn't read the calendar: ${e.message}`] });
+  }
 });
 
 // Creates a new calendar. Body may seed initial goals/entries/selectedGoalId
@@ -83,6 +93,7 @@ router.post('/', (req, res) => {
     saveCalendar(calendar);
     res.json(calendar);
   } catch (e) {
+    console.error('POST /api/calendars failed:', e);
     res.status(500).json({ success: false, errors: [`Server couldn't save the calendar: ${e.message}`] });
   }
 });
@@ -94,7 +105,14 @@ router.put('/:id', (req, res) => {
   if (!isSafeCalendarId(req.params.id)) {
     return res.status(400).json({ success: false, errors: ['Invalid calendar id.'] });
   }
-  const existing = loadCalendar(req.params.id);
+
+  let existing;
+  try {
+    existing = loadCalendar(req.params.id);
+  } catch (e) {
+    console.error(`PUT /api/calendars/${req.params.id} failed reading existing calendar:`, e);
+    return res.status(500).json({ success: false, errors: [`Server couldn't read the calendar: ${e.message}`] });
+  }
   if (!existing) return res.status(404).json({ success: false, errors: ['No such calendar.'] });
 
   const body = req.body || {};
@@ -113,6 +131,7 @@ router.put('/:id', (req, res) => {
     saveCalendar(updated);
     res.json(updated);
   } catch (e) {
+    console.error(`PUT /api/calendars/${req.params.id} failed saving:`, e);
     res.status(500).json({ success: false, errors: [`Server couldn't save the calendar: ${e.message}`] });
   }
 });

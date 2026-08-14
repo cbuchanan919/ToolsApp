@@ -67,9 +67,12 @@
     } else if (mode === "synced") {
       statusDot.className = "tools-status-dot tools-status-dot--ok";
       statusRight.textContent = "synced";
-    } else if (mode === "error") {
+    } else if (mode === "save-error") {
       statusDot.className = "tools-status-dot";
       statusRight.textContent = "save failed";
+    } else if (mode === "load-error") {
+      statusDot.className = "tools-status-dot";
+      statusRight.textContent = "load failed";
     } else {
       statusDot.className = "tools-status-dot";
       statusRight.textContent = "idle";
@@ -91,13 +94,27 @@
     }
   }
 
+  // Reads the {success:false, errors:[...]} body routes/calendars.js sends
+  // on 4xx/5xx so failures are diagnosable from the browser console alone
+  // (no server access needed) instead of collapsing to a bare status code.
+  async function describeFailedResponse(res) {
+    try {
+      const body = await res.json();
+      if (Array.isArray(body.errors) && body.errors.length) return body.errors.join("; ");
+      if (body.error) return body.error;
+    } catch (e) {
+      // body wasn't JSON (e.g. a proxy/500 HTML error page) — fall through
+    }
+    return res.status + " " + res.statusText;
+  }
+
   async function createCalendar(initial) {
     const res = await fetch("/api/calendars", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(initial),
     });
-    if (!res.ok) throw new Error("create calendar failed: " + res.status);
+    if (!res.ok) throw new Error("POST /api/calendars failed: " + await describeFailedResponse(res));
     return res.json();
   }
 
@@ -109,8 +126,10 @@
         if (res.ok) return res.json();
         // 404 (or invalid id) — the stored pointer is stale; fall through
         // and create a fresh calendar below instead of failing outright.
+        console.warn("GET /api/calendars/" + storedId + " failed (" + res.status + ") — creating a new calendar instead.");
       } catch (e) {
         // network hiccup on the lookup — still try to create fresh below
+        console.warn("GET /api/calendars/" + storedId + " threw — creating a new calendar instead.", e);
       }
     }
     const created = await createCalendar(DEFAULT_DATA);
@@ -140,11 +159,12 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ goals: next.goals, entries: next.entries, selectedGoalId: next.selectedGoalId }),
       });
-      if (!res.ok) throw new Error("save failed: " + res.status);
+      if (!res.ok) throw new Error("PUT /api/calendars/" + calendarId + " failed: " + await describeFailedResponse(res));
       setStatus("synced");
       flashSave("✓ saved");
     } catch (e) {
-      setStatus("error");
+      console.error("Life Goals Calendar: save failed —", e);
+      setStatus("save-error");
       flashSave("save failed");
     }
   }
@@ -336,9 +356,12 @@
       serverCalendarCount = count;
       setStatus("synced");
     } catch (e) {
+      console.error("Life Goals Calendar: couldn't load/create a calendar —", e);
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-      setStatus("error");
-      document.getElementById("app").innerHTML = '<div class="empty-state">Couldn’t reach the server to load your calendar. Check your connection and reload the page.</div>';
+      setStatus("load-error");
+      document.getElementById("app").innerHTML =
+        '<div class="empty-state">Couldn’t reach the server to load your calendar (' + esc(e.message) + '). ' +
+        'Check the browser console/network tab for details, or the server logs, then reload the page.</div>';
       return;
     }
     render();
