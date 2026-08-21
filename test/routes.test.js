@@ -41,6 +41,18 @@ function cleanupTestCalendars() {
   createdTestCalendarIds.length = 0;
 }
 
+// Same pattern as calendars above — no DELETE route, so clean up the
+// generated-id files directly.
+const MATH_FACTS_PROFILES_DIR = path.join(__dirname, '..', 'server', 'data', 'mathFactsProfiles');
+const createdTestProfileIds = [];
+
+function cleanupTestMathFactsProfiles() {
+  for (const id of createdTestProfileIds) {
+    try { fs.unlinkSync(path.join(MATH_FACTS_PROFILES_DIR, `${id}.json`)); } catch (e) { /* wasn't there */ }
+  }
+  createdTestProfileIds.length = 0;
+}
+
 let server, baseUrl;
 
 test.before(() => {
@@ -52,6 +64,7 @@ test.before(() => {
 test.after(() => {
   cleanupTestExam();
   cleanupTestCalendars();
+  cleanupTestMathFactsProfiles();
   server.close();
 });
 
@@ -293,5 +306,94 @@ test('GET /api/calendars', async (t) => {
     const all = await listRes.json();
     assert.ok(Array.isArray(all));
     assert.ok(all.some((c) => c.id === created.id));
+  });
+});
+
+test('POST /api/math-facts-profiles, GET /api/math-facts-profiles/:id, PUT /api/math-facts-profiles/:id', async (t) => {
+  await t.test('creating with no body produces a blank, valid profile', async () => {
+    const res = await fetch(`${baseUrl}/api/math-facts-profiles`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    assert.equal(res.status, 200);
+    const profile = await res.json();
+    createdTestProfileIds.push(profile.id);
+    assert.match(profile.id, /^mf-[a-f0-9]{20}$/);
+    assert.equal(profile.userId, null);
+    assert.equal(profile.totalPoints, 0);
+    assert.deepEqual(profile.badges, []);
+    assert.deepEqual(profile.factStats, {});
+    assert.ok(profile.createdAt);
+    assert.equal(profile.createdAt, profile.updatedAt);
+  });
+
+  await t.test('creating with a schema-invalid body is rejected with a 400', async () => {
+    const res = await fetch(`${baseUrl}/api/math-facts-profiles`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalPoints: -50 })
+    });
+    assert.equal(res.status, 400);
+    const body = await res.json();
+    assert.equal(body.success, false);
+    assert.ok(Array.isArray(body.errors) && body.errors.length > 0);
+  });
+
+  await t.test('a full create/fetch/update/fetch round trip persists points, streak, and fact stats', async () => {
+    const createRes = await fetch(`${baseUrl}/api/math-facts-profiles`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const created = await createRes.json();
+    createdTestProfileIds.push(created.id);
+
+    const fetchRes = await fetch(`${baseUrl}/api/math-facts-profiles/${created.id}`);
+    assert.equal(fetchRes.status, 200);
+    const fetched = await fetchRes.json();
+    assert.equal(fetched.totalPoints, 0);
+
+    const putRes = await fetch(`${baseUrl}/api/math-facts-profiles/${created.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        totalPoints: 150,
+        streak: { current: 1, longest: 1, lastPracticeDate: '2026-08-21' },
+        factStats: { 'add:3+4': { attempts: 3, correct: 3, totalTimeMs: 4500, avgTimeMs: 1500, lastPracticedAt: '2026-08-21T00:00:00.000Z' } }
+      })
+    });
+    assert.equal(putRes.status, 200);
+    const updated = await putRes.json();
+    assert.equal(updated.totalPoints, 150);
+    assert.equal(updated.streak.current, 1);
+    assert.deepEqual(updated.factStats['add:3+4'].attempts, 3);
+    // Fields omitted from the PUT body (badges, sessionHistory) keep their
+    // previously stored value rather than being wiped out.
+    assert.deepEqual(updated.badges, []);
+    assert.notEqual(updated.updatedAt, created.updatedAt);
+
+    const refetchRes = await fetch(`${baseUrl}/api/math-facts-profiles/${created.id}`);
+    const refetched = await refetchRes.json();
+    assert.equal(refetched.totalPoints, 150);
+  });
+
+  await t.test('GET on an unknown (but well-formed) id is a 404', async () => {
+    const res = await fetch(`${baseUrl}/api/math-facts-profiles/mf-00000000000000000000`);
+    assert.equal(res.status, 404);
+  });
+
+  await t.test('a malformed id is rejected with a 400, not treated as a path', async () => {
+    const res = await fetch(`${baseUrl}/api/math-facts-profiles/${encodeURIComponent('../../server/index')}`);
+    assert.equal(res.status, 400);
+  });
+
+  await t.test('PUT to an unknown id is a 404', async () => {
+    const res = await fetch(`${baseUrl}/api/math-facts-profiles/mf-00000000000000000000`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalPoints: 10 })
+    });
+    assert.equal(res.status, 404);
   });
 });

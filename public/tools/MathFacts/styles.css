@@ -1,0 +1,113 @@
+/* Uses the shared --tools-* design tokens from /global.css (dark by
+   default, light via :root[data-theme="light"]) — no tool-local palette,
+   so this tool follows the site-wide theme toggle automatically. */
+.mf-wrap { max-width: var(--tools-content-width); margin: 0 auto; padding: 28px 20px 60px; }
+
+.mf-card { background: var(--tools-panel); border: 1px solid var(--tools-line); border-radius: 10px; padding: 22px; margin-top: 18px; }
+.mf-eyebrow { font-size: 11px; letter-spacing: 0.1em; color: var(--tools-muted); text-transform: uppercase; }
+.mf-title { font-size: 26px; margin-top: 4px; }
+.mf-sub { color: var(--tools-muted); font-size: 13px; margin-top: 8px; line-height: 1.5; }
+.mf-empty { color: var(--tools-muted); font-size: 13px; padding: 20px 0; text-align: center; }
+.mf-hint { font-size: 11px; color: var(--tools-muted); margin-top: 6px; }
+
+.mf-field-label { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tools-muted); margin-top: 20px; margin-bottom: 8px; }
+
+.mf-btn {
+  background: var(--tools-panel-alt); border: 1px solid var(--tools-line); color: var(--tools-text);
+  font-family: inherit; font-size: 13px; padding: 8px 14px; border-radius: 6px; cursor: pointer;
+}
+.mf-btn:hover { border-color: var(--tools-accent); }
+.mf-btn--primary { background: var(--tools-accent); border-color: var(--tools-accent); color: var(--tools-accent-contrast); font-weight: 600; }
+.mf-btn--ghost { background: transparent; }
+.mf-btn-row { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+.mf-start-btn { margin-top: 24px; width: 100%; font-size: 15px; padding: 12px; }
+
+.mf-select {
+  background: var(--tools-bg); border: 1px solid var(--tools-line); color: var(--tools-text);
+  font-family: inherit; font-size: 13px; padding: 6px 8px; border-radius: 6px;
+}
+
+/* ---- summary bar (points/level/streak), shown above setup + practice ---- */
+.mf-summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; align-items: center; margin-top: 4px; }
+.mf-summary-stat { background: var(--tools-panel); border: 1px solid var(--tools-line); border-radius: 8px; padding: 10px 14px; }
+.mf-summary-label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tools-muted); }
+.mf-summary-value { font-size: 17px; margin-top: 4px; }
+
+/* ---- setup screen ---- */
+.mf-op-list { display: flex; flex-direction: column; gap: 8px; }
+.mf-op-row { display: flex; flex-direction: column; gap: 10px; background: var(--tools-panel-alt); border: 1px solid var(--tools-line); border-radius: 8px; padding: 10px 12px; }
+.mf-op-check { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+
+.mf-range-controls { display: flex; flex-direction: column; gap: 8px; padding-left: 26px; }
+.mf-preset-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.mf-preset-btn {
+  background: var(--tools-panel); border: 1px solid var(--tools-line); color: var(--tools-muted);
+  font-family: inherit; font-size: 12px; padding: 5px 10px; border-radius: 999px; cursor: pointer;
+}
+.mf-preset-btn:hover { border-color: var(--tools-accent); }
+.mf-preset-btn--active { color: var(--tools-text); background: var(--tools-panel); border-color: var(--tools-accent); font-weight: 600; }
+.mf-range-inputs { display: flex; align-items: center; gap: 8px; }
+.mf-range-input {
+  width: 64px; background: var(--tools-bg); border: 1px solid var(--tools-line); color: var(--tools-text);
+  font-family: inherit; font-size: 13px; padding: 6px 8px; border-radius: 6px;
+}
+.mf-range-to { font-size: 12px; color: var(--tools-muted); }
+
+.mf-mode-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.mf-radio { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.mf-radio--disabled { opacity: 0.5; cursor: default; }
+
+/* ---- practice screen ---- */
+.mf-practice-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+.mf-progress { font-size: 13px; color: var(--tools-muted); }
+.mf-live-score { font-size: 13px; font-weight: 600; }
+
+.mf-fact-card {
+  background: var(--tools-panel); border: 2px solid var(--tools-line); border-radius: 12px;
+  padding: 40px 20px; margin-top: 14px; text-align: center; transition: border-color 150ms ease;
+}
+.mf-fact-card--correct { border-color: var(--tools-ok); }
+.mf-fact-card--incorrect { border-color: var(--tools-danger); }
+.mf-fact { font-size: 40px; font-weight: 600; letter-spacing: 0.02em; }
+.mf-answer-input {
+  display: block; margin: 18px auto 0; width: 140px; text-align: center; font-size: 28px; font-family: inherit;
+  background: var(--tools-bg); border: 1px solid var(--tools-line); border-radius: 8px; padding: 8px; color: var(--tools-text);
+}
+.mf-answer-input:focus { outline: none; border-color: var(--tools-accent); }
+.mf-feedback { margin-top: 12px; font-size: 14px; font-weight: 600; }
+.mf-feedback--correct { color: var(--tools-ok); }
+.mf-feedback--incorrect { color: var(--tools-danger); }
+
+.mf-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; max-width: 260px; margin-left: auto; margin-right: auto; }
+.mf-key {
+  background: var(--tools-panel-alt); border: 1px solid var(--tools-line); color: var(--tools-text);
+  font-family: inherit; font-size: 18px; padding: 14px 0; border-radius: 8px; cursor: pointer;
+}
+.mf-key:hover { border-color: var(--tools-accent); }
+.mf-key--submit { background: var(--tools-accent); border-color: var(--tools-accent); color: var(--tools-accent-contrast); font-weight: 600; }
+
+/* ---- results & dashboard ---- */
+.mf-badge-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.mf-badge {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 7px 12px; border-radius: 999px;
+  border: 1px solid var(--tools-line); background: var(--tools-panel-alt);
+}
+.mf-badge--earned { border-color: var(--tools-accent); color: var(--tools-text); }
+.mf-badge--locked { opacity: 0.4; }
+.mf-badge-icon { font-size: 14px; }
+
+.mf-table-wrap { overflow-x: auto; margin-top: 8px; }
+.mf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mf-table th, .mf-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--tools-line); white-space: nowrap; }
+.mf-table th { color: var(--tools-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+
+.mf-pill { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--tools-line); }
+.mf-pill--new { color: var(--tools-muted); }
+.mf-pill--learning { color: var(--tools-warn); border-color: var(--tools-warn); }
+.mf-pill--practiced { color: var(--tools-info); border-color: var(--tools-info); }
+.mf-pill--mastered { color: var(--tools-ok); border-color: var(--tools-ok); }
+
+@media (max-width: 480px) {
+  .mf-fact { font-size: 32px; }
+  .mf-start-btn { font-size: 14px; }
+}

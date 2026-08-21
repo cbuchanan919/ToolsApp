@@ -6,6 +6,18 @@ shared "Tools" landing page and top nav bar. Currently:
 - **Exam** (`public/tools/Exam/`) — a practice exam runner. Load a bank of
   multiple-choice questions, take it in **study** mode (instant feedback) or
   **test** mode (scored at the end), and review results by domain.
+- **Math Facts Practice** (`public/tools/MathFacts/`) — drills addition,
+  subtraction, multiplication, and division facts in a timed-drill or
+  fixed-set session, with a numeric keypad for touch. Tracks per-fact
+  accuracy/response time to rank which facts are and aren't mastered yet
+  (weakest-first, also used by an optional Focus Mode), and layers on
+  points, levels, badges, and daily streaks. Profile data (points, streak,
+  badges, per-fact stats) is stored server-side (`GET`/`POST`/`PUT
+  /api/math-facts-profiles`, see below), same pattern as Life Goals
+  Calendar. All the fact-generation/scoring/mastery logic lives in
+  `public/tools/MathFacts/mathFactsCore.js`, a dual-usable module
+  (`<script>`-tagged in the browser, `require()`d directly by
+  `test/mathFacts.test.js`) so it's unit-tested without a browser.
 - **Income Calculator (Simple)** (`public/tools/Finance/IncomeCalculatorSimple/`) —
   converts between salary and hourly pay using real federal/state tax
   brackets, with a pay breakdown, offer comparator, and PTO value calculator.
@@ -76,6 +88,16 @@ reference data shared across tools and the exam upload feature (see below).
   autosaves: on first load with no calendar id in `localStorage` it `POST`s
   a new one and remembers the returned id, then `PUT`s the full calendar
   after every change (goal added/renamed/removed, day toggled).
+- `GET /api/math-facts-profiles/:id`, `POST /api/math-facts-profiles`,
+  `PUT /api/math-facts-profiles/:id` — Math Facts Practice's storage, same
+  shape of pattern as calendars above. Each profile is a JSON file (`{ id,
+  userId, totalPoints, streak, badges, factStats, sessionHistory,
+  createdAt, updatedAt }`) under `server/data/mathFactsProfiles/`
+  (gitignored); `userId` is always `null` today for the same reason. The
+  frontend autosaves once per completed practice session (not per
+  keystroke): it `POST`s a new profile on first load with no id in
+  `localStorage`, then `PUT`s the full profile — updated points, streak,
+  badges, and per-fact stats — when a session ends.
 
 ## Site structure
 

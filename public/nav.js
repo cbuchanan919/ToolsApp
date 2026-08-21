@@ -18,6 +18,13 @@
       category: "Education",
     },
     {
+      id: "math-facts",
+      label: "Math Facts Practice",
+      href: "/tools/MathFacts/",
+      description: "Drill addition, subtraction, multiplication, and division facts with timed practice, mastery tracking, and points.",
+      category: "Education",
+    },
+    {
       id: "income-calculator-simple",
       label: "Income Calculator (Simple)",
       href: "/tools/Finance/IncomeCalculatorSimple/",
