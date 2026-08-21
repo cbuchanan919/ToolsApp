@@ -5,16 +5,19 @@ shared "Tools" landing page and top nav bar. Currently:
 
 - **Exam** (`public/tools/Exam/`) — a practice exam runner. Load a bank of
   multiple-choice questions, take it in **study** mode (instant feedback) or
-  **test** mode (scored at the end), and review results by domain.
+  **test** mode (scored at the end), and review results by domain. Anyone
+  can browse/take the bundled exams without an account; uploading your own
+  exam bank requires logging in (see "Accounts" below) and is private to you.
 - **Math Facts Practice** (`public/tools/MathFacts/`) — drills addition,
   subtraction, multiplication, and division facts in a timed-drill or
   fixed-set session, with a numeric keypad for touch. Tracks per-fact
   accuracy/response time to rank which facts are and aren't mastered yet
   (weakest-first, also used by an optional Focus Mode), and layers on
-  points, levels, badges, and daily streaks. Profile data (points, streak,
-  badges, per-fact stats) is stored server-side (`GET`/`POST`/`PUT
-  /api/math-facts-profiles`, see below), same pattern as Life Goals
-  Calendar. All the fact-generation/scoring/mastery logic lives in
+  points, levels, badges, and daily streaks. Works fully without an account
+  (practice is never blocked), but saving progress across visits requires
+  logging in — profile data (points, streak, badges, per-fact stats) is
+  stored server-side (`GET`/`PUT /api/math-facts-profiles/me`, see below).
+  All the fact-generation/scoring/mastery logic lives in
   `public/tools/MathFacts/mathFactsCore.js`, a dual-usable module
   (`<script>`-tagged in the browser, `require()`d directly by
   `test/mathFacts.test.js`) so it's unit-tested without a browser.
@@ -31,9 +34,9 @@ shared "Tools" landing page and top nav bar. Currently:
   over" estimate after taxes.
 - **Life Goals Calendar** (`public/tools/Personal/LifeGoalsCalendar/`) — a
   habit-tracking calendar: define goals, mark days done, and see current/
-  best streaks. Calendar data is stored server-side (`GET`/`POST`/`PUT
-  /api/calendars`, see below), not in `localStorage` — the browser only
-  keeps a pointer (the calendar's id) so it can find its own calendar again.
+  best streaks. The calendar UI works without an account, but saving is
+  per-user and requires logging in — calendar data is stored server-side
+  (`GET`/`PUT /api/calendars/me`, see below).
 
 `public/tools/Finance/` and `public/tools/Personal/` are category folders —
 tools within them share the folder and are grouped under that heading on the
@@ -72,32 +75,72 @@ reference data shared across tools and the exam upload feature (see below).
   `AbortController` cancelling stale requests) — used by the Investment
   Growth Calculator's secondary "money left over" line, where a network
   round-trip doesn't cost any perceived responsiveness.
-- `server/middleware/auth.js` — currently a no-op pass-through. Every route
-  above already runs through it, so real auth (an API key check, a JWT
-  verify) is a one-file change here later, not a routes/ refactor.
-- `POST /api/exams`, `DELETE /api/exams/:filename` — the exam upload
-  feature described below; ported from the previous Python server with the
-  same validation and safety checks.
-- `GET /api/calendars`, `GET /api/calendars/:id`, `POST /api/calendars`,
-  `PUT /api/calendars/:id` — Life Goals Calendar's storage. Each calendar is
-  a JSON file (`{ id, userId, goals, entries, selectedGoalId, createdAt,
-  updatedAt }`) under `server/data/calendars/` (gitignored — runtime data,
-  not source). `GET /api/calendars` returns every calendar on the server
-  unfiltered; `userId` is always `null` today, reserved for an eventual
-  `?userId=` filter once there's real auth to source it from. The frontend
-  autosaves: on first load with no calendar id in `localStorage` it `POST`s
-  a new one and remembers the returned id, then `PUT`s the full calendar
-  after every change (goal added/renamed/removed, day toggled).
-- `GET /api/math-facts-profiles/:id`, `POST /api/math-facts-profiles`,
-  `PUT /api/math-facts-profiles/:id` — Math Facts Practice's storage, same
-  shape of pattern as calendars above. Each profile is a JSON file (`{ id,
-  userId, totalPoints, streak, badges, factStats, sessionHistory,
-  createdAt, updatedAt }`) under `server/data/mathFactsProfiles/`
-  (gitignored); `userId` is always `null` today for the same reason. The
-  frontend autosaves once per completed practice session (not per
-  keystroke): it `POST`s a new profile on first load with no id in
-  `localStorage`, then `PUT`s the full profile — updated points, streak,
-  badges, and per-fact stats — when a session ends.
+- `server/middleware/auth.js` — `attachUser` resolves the session cookie
+  into `req.user` (`null` if logged out) for every route; mounted globally
+  in `server/app.js`, before any route. `requireAuth` rejects with 401 if
+  `req.user` is unset — applied at the router level for calendars/math-facts
+  profiles (every route there needs a logged-in user), and per-route in
+  `routes/exams.js` (browsing exams stays open; only upload/delete require
+  it). See "Accounts" below.
+- `GET /api/exams` (open) — merged exam list: bundled exams (always) plus
+  the caller's own uploads (only if logged in), each tagged
+  `source: "bundled" | "mine"`. `GET /api/exams/mine/:filename` (login
+  required) serves one of *your own* uploads' content — directory-scoped to
+  your account, so there's no way to fetch someone else's upload. Bundled
+  exam content is still fetched directly from its static path in
+  `public/tools/Exam/exams/`, unchanged. `POST /api/exams` (login required)
+  saves into `server/data/examUploads/<your user id>/` (gitignored, private
+  to you — no longer inside `public/`); `DELETE /api/exams/:filename` (login
+  required) removes one of your own uploads. Ported from the previous
+  Python server with the same schema validation/safety checks, now with
+  per-user storage layered on top.
+- `GET /api/calendars/me`, `PUT /api/calendars/me` (login required) — Life
+  Goals Calendar's storage, one calendar per account. Each calendar is a
+  JSON file (`{ id, userId, goals, entries, selectedGoalId, createdAt,
+  updatedAt }`) under `server/data/calendars/` (gitignored), named by user
+  id. The frontend loads on login and `PUT`s the full calendar after every
+  change (goal added/renamed/removed, day toggled); logged out, the tool
+  runs on an in-memory calendar and prompts to log in the moment you try to
+  save (see "Accounts" below). `POST /api/calendars/claim` (login required,
+  `{ anonymousId }`) attaches an old pre-account anonymous calendar (if
+  this browser still has one in `localStorage` from before accounts
+  existed) to your account — only if your account doesn't already have
+  real saved content.
+- `GET /api/math-facts-profiles/me`, `PUT /api/math-facts-profiles/me`
+  (login required) — Math Facts Practice's storage, same shape of pattern
+  as calendars above. Each profile is a JSON file (`{ id, userId,
+  totalPoints, streak, badges, factStats, sessionHistory, createdAt,
+  updatedAt }`) under `server/data/mathFactsProfiles/` (gitignored), named
+  by user id. Autosaves once per completed practice session (not per
+  keystroke). `POST /api/math-facts-profiles/claim` mirrors calendars'
+  claim endpoint above.
+
+## Accounts
+
+Simple, self-serve accounts — email + password, one login for the whole
+site. Basic functionality never requires an account (practicing math facts,
+using the calendar UI, browsing/taking any exam); only *saving/uploading*
+does, prompted via a shared login modal (`window.ToolsAuth`, in `nav.js`)
+the moment you try to. OAuth is a deliberate future item, not implemented.
+
+- `server/lib/passwords.js` — hashes with Node's async `crypto.scrypt`
+  (explicit cost params stored alongside the hash). `server/lib/
+  authValidation.js` — email/password rules (email is a practical
+  shape-check, not full RFC 5322 validation — no verification email is
+  ever sent). `server/lib/userStore.js` — accounts, one JSON object keyed
+  by lowercased email at `server/data/users.json` (gitignored).
+  `server/lib/sessionStore.js` — sessions, persisted (not just in-memory)
+  at `server/data/sessions.json` (gitignored) so logins survive a deploy
+  restart, keyed by a random token set as an `httpOnly` cookie.
+- `POST /api/auth/signup`, `POST /api/auth/login`, `POST /api/auth/logout`,
+  `GET /api/auth/me` — the only auth routes reachable while logged out.
+  Login/signup failures are deliberately generic ("Incorrect email or
+  password") so they can't be used to enumerate registered emails.
+- **Known, accepted limitations** (fine for a small personal/family site,
+  not appropriate to scale up without revisiting): no rate limiting or
+  lockout on login attempts; session tokens are stored in plaintext in
+  `sessions.json`; the `claim` endpoints' only "ownership" proof is knowing
+  the old anonymous id string itself (low risk given its entropy, but real).
 
 ## Site structure
 
@@ -200,7 +243,8 @@ universal nav bar) and keeps `localStorage` in sync as the user clicks it;
 
 ## Adding an exam
 
-Exam banks are JSON files in `public/tools/Exam/exams/`, listed in
+**Bundled exams** (shared, visible to everyone, no login needed) are JSON
+files in `public/tools/Exam/exams/`, listed in
 `public/tools/Exam/exams/manifest.json`:
 
 ```json
@@ -211,13 +255,14 @@ Exam banks are JSON files in `public/tools/Exam/exams/`, listed in
 }
 ```
 
-You can either:
-- Drop a `.json` file in `public/tools/Exam/exams/` and add an entry to the
-  manifest by hand, or
-- Use the **Upload exam** control on the start screen — the server validates
-  the file, writes it to `public/tools/Exam/exams/`, and adds a manifest entry
-  automatically (flagged `"uploaded": true`, which is what lets it be
-  deleted again from the UI).
+Drop a `.json` file in `public/tools/Exam/exams/` and add an entry to the
+manifest by hand to add one.
+
+**Your own uploads** are different: use the **Upload exam** control on the
+start screen (prompts to log in if you aren't already) — the server
+validates the file and saves it privately to `server/data/examUploads/<your
+user id>/`, not into `public/`, so only you ever see it in your exam list or
+can fetch its content. `manifest.json` is never touched by uploads.
 
 ## Exam file format
 

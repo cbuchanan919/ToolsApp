@@ -2,14 +2,26 @@
 node_modules/
 .env
 
-# Runtime data (one file per calendar, written by POST/PUT /api/calendars) —
-# not source, and unlike the bundled/uploaded exam banks it isn't curated
-# content worth tracking.
+# Runtime data (one file per calendar, written by POST/PUT
+# /api/calendars/me) — not source, and unlike the bundled exam banks it
+# isn't curated content worth tracking.
 server/data/calendars/
 
 # Runtime data (one file per profile, written by POST/PUT
-# /api/math-facts-profiles) — not source, same reasoning as calendars/ above.
+# /api/math-facts-profiles/me) — not source, same reasoning as calendars/
+# above.
 server/data/mathFactsProfiles/
+
+# Accounts and sessions (server/lib/userStore.js, sessionStore.js) — not
+# source. Sessions are persisted (not just in-memory) so they survive a
+# deploy restart, but that also means this file is real secret-adjacent
+# state, not something to commit.
+server/data/users.json
+server/data/sessions.json
+
+# Per-user uploaded exams (server/routes/exams.js POST /api/exams) — not
+# source, private to the uploading user, same reasoning as calendars/ above.
+server/data/examUploads/
 
 # Local deploy state (see deploy-check.sh) — the last commit that was fully
 # pulled/installed/restarted successfully on this machine, not source.

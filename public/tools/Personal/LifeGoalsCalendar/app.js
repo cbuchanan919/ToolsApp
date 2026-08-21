@@ -1,9 +1,11 @@
 (function () {
   "use strict";
 
-  // Points at this browser's calendar on the server — the calendar's actual
-  // data (goals/entries) no longer lives in localStorage, only this id does.
-  const CALENDAR_ID_KEY = "life-goals-calendar-id";
+  // Pre-login, this pointed at an anonymous calendar on the server; now
+  // that saving requires an account, it's kept only so a returning user's
+  // old anonymous data can be claimed onto their new account once (see
+  // tryClaimLegacyAnonymousData below), then it's discarded.
+  const ANON_CALENDAR_ID_KEY = "life-goals-calendar-id";
   const COLOR_POOL = ["#e8a94c", "#4fa3e0", "#e2735a", "#9b8cf2", "#52c9a0", "#e0c14f", "#6ba8ff", "#f2789f"];
   const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const DEFAULT_DATA = {
@@ -73,6 +75,9 @@
     } else if (mode === "load-error") {
       statusDot.className = "tools-status-dot";
       statusRight.textContent = "load failed";
+    } else if (mode === "guest") {
+      statusDot.className = "tools-status-dot";
+      statusRight.textContent = "guest — log in to save";
     } else {
       statusDot.className = "tools-status-dot";
       statusRight.textContent = "idle";
@@ -80,19 +85,9 @@
   }
 
   // ---------- server-backed calendar ----------
-  let calendarId = null;
-  let serverCalendarCount = null;
-
-  async function fetchCalendarCount() {
-    try {
-      const res = await fetch("/api/calendars");
-      if (!res.ok) return null;
-      const all = await res.json();
-      return Array.isArray(all) ? all.length : null;
-    } catch (e) {
-      return null;
-    }
-  }
+  // Every route here requires login (see server/routes/calendars.js) — no
+  // login means no server round trip at all, just an in-memory calendar
+  // (see loadForCurrentAuthState below).
 
   // Reads the {success:false, errors:[...]} body routes/calendars.js sends
   // on 4xx/5xx so failures are diagnosable from the browser console alone
@@ -108,33 +103,33 @@
     return res.status + " " + res.statusText;
   }
 
-  async function createCalendar(initial) {
-    const res = await fetch("/api/calendars", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(initial),
-    });
-    if (!res.ok) throw new Error("POST /api/calendars failed: " + await describeFailedResponse(res));
+  async function fetchMyCalendar() {
+    const res = await fetch("/api/calendars/me");
+    if (!res.ok) throw new Error("GET /api/calendars/me failed: " + await describeFailedResponse(res));
     return res.json();
   }
 
-  async function loadOwnCalendar() {
-    const storedId = localStorage.getItem(CALENDAR_ID_KEY);
-    if (storedId) {
-      try {
-        const res = await fetch("/api/calendars/" + storedId);
-        if (res.ok) return res.json();
-        // 404 (or invalid id) — the stored pointer is stale; fall through
-        // and create a fresh calendar below instead of failing outright.
-        console.warn("GET /api/calendars/" + storedId + " failed (" + res.status + ") — creating a new calendar instead.");
-      } catch (e) {
-        // network hiccup on the lookup — still try to create fresh below
-        console.warn("GET /api/calendars/" + storedId + " threw — creating a new calendar instead.", e);
-      }
+  // If this browser still has a pre-login anonymous calendar id (from
+  // before accounts existed), try to attach it to the now-logged-in
+  // account once. Succeeds, is refused (409 — account already has real
+  // data), or the guest record is simply gone (404): either way there's
+  // nothing more this key can do, so it's discarded after one attempt. A
+  // network hiccup leaves it in place to retry on the next load.
+  async function tryClaimLegacyAnonymousData() {
+    const anonId = localStorage.getItem(ANON_CALENDAR_ID_KEY);
+    if (!anonId) return null;
+    try {
+      const res = await fetch("/api/calendars/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ anonymousId: anonId }),
+      });
+      localStorage.removeItem(ANON_CALENDAR_ID_KEY);
+      return res.ok ? res.json() : null;
+    } catch (e) {
+      console.warn("Life Goals Calendar: couldn't claim legacy guest data (will retry next load) —", e);
+      return null;
     }
-    const created = await createCalendar(DEFAULT_DATA);
-    localStorage.setItem(CALENDAR_ID_KEY, created.id);
-    return created;
   }
 
   let saveFlagTimeout = null;
@@ -146,20 +141,37 @@
     saveFlagTimeout = setTimeout(() => { if (el) el.textContent = ""; }, 1200);
   }
 
+  // Set right before a save-triggered login prompt, so the tools:auth-changed
+  // listener (which reloads from the server) doesn't race the save this
+  // same login was for — see onAuthChanged below.
+  let suppressNextAuthReload = false;
+
   // Optimistic: updates local state and re-renders immediately (so the UI
   // feels as instant as the old localStorage version), then persists to the
-  // server in the background. Callers don't need to await this.
+  // server in the background. Prompts to log in first if needed — this is
+  // the "modal before save" behavior for this tool.
   async function saveData(next) {
+    if (!window.ToolsAuth.getUser()) {
+      suppressNextAuthReload = true;
+      try {
+        await window.ToolsAuth.requireLogin("Log in to save your Life Goals Calendar");
+      } catch (e) {
+        suppressNextAuthReload = false;
+        return; // modal was cancelled — nothing to save
+      }
+      await tryClaimLegacyAnonymousData();
+    }
+
     data = next;
     render();
     setStatus("saving");
     try {
-      const res = await fetch("/api/calendars/" + calendarId, {
+      const res = await fetch("/api/calendars/me", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ goals: next.goals, entries: next.entries, selectedGoalId: next.selectedGoalId }),
       });
-      if (!res.ok) throw new Error("PUT /api/calendars/" + calendarId + " failed: " + await describeFailedResponse(res));
+      if (!res.ok) throw new Error("PUT /api/calendars/me failed: " + await describeFailedResponse(res));
       setStatus("synced");
       flashSave("✓ saved");
     } catch (e) {
@@ -257,12 +269,9 @@
         '<div class="cal-grid">' + cellsHtml + '</div>';
     }
 
-    const serverCountHtml = serverCalendarCount === null ? "" :
-      '<div class="server-count">' + serverCalendarCount + (serverCalendarCount === 1 ? " calendar" : " calendars") + ' tracked on this server</div>';
-
     app.innerHTML =
       '<div class="header-row">' +
-        '<div><div class="eyebrow">life goals // daily ledger</div><div class="title">Progress Ledger</div>' + serverCountHtml + '</div>' +
+        '<div><div class="eyebrow">life goals // daily ledger</div><div class="title">Progress Ledger</div></div>' +
         '<div class="save-flag" id="save-flag"></div>' +
       '</div>' +
       '<div class="tabs">' + tabsHtml + '</div>' +
@@ -347,24 +356,42 @@
     else if (role === "edit-input") { saveEdit(e.target.dataset.id); }
   });
 
-  async function init() {
+  // Logged in: load (and opportunistically claim legacy guest data into)
+  // this user's real calendar. Logged out: skip the network entirely and
+  // run on a blank in-memory calendar — nothing persists until they log in
+  // (saveData prompts for that itself).
+  async function loadForCurrentAuthState() {
+    if (!window.ToolsAuth.getUser()) {
+      data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      setStatus("guest");
+      render();
+      return;
+    }
     document.getElementById("app").innerHTML = '<div class="empty-state">Loading…</div>';
     try {
-      const [calendar, count] = await Promise.all([loadOwnCalendar(), fetchCalendarCount()]);
-      data = calendar;
-      calendarId = calendar.id;
-      serverCalendarCount = count;
+      data = (await tryClaimLegacyAnonymousData()) || (await fetchMyCalendar());
       setStatus("synced");
+      render();
     } catch (e) {
-      console.error("Life Goals Calendar: couldn't load/create a calendar —", e);
+      console.error("Life Goals Calendar: couldn't load your calendar —", e);
       data = JSON.parse(JSON.stringify(DEFAULT_DATA));
       setStatus("load-error");
       document.getElementById("app").innerHTML =
         '<div class="empty-state">Couldn’t reach the server to load your calendar (' + esc(e.message) + '). ' +
         'Check the browser console/network tab for details, or the server logs, then reload the page.</div>';
-      return;
     }
-    render();
+  }
+
+  function onAuthChanged() {
+    if (suppressNextAuthReload) { suppressNextAuthReload = false; return; }
+    loadForCurrentAuthState();
+  }
+
+  async function init() {
+    document.getElementById("app").innerHTML = '<div class="empty-state">Loading…</div>';
+    await window.ToolsAuth.ready;
+    window.addEventListener("tools:auth-changed", onAuthChanged);
+    await loadForCurrentAuthState();
   }
 
   init();

@@ -5,7 +5,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { requireAuth } = require('./middleware/auth');
+const { attachUser, requireAuth } = require('./middleware/auth');
 
 const BASE_DIR = path.join(__dirname, '..');
 const PUBLIC_DIR = path.join(BASE_DIR, 'public');
@@ -24,10 +24,27 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-app.use('/api/exams', requireAuth, require('./routes/exams'));
-app.use('/api/states', requireAuth, require('./routes/states'));
-app.use('/api/federal', requireAuth, require('./routes/federal'));
-app.use('/api/tax-estimate', requireAuth, require('./routes/tax'));
+// Resolves the session cookie (if any) into req.user for every route below
+// — null when logged out. Routes that need to *require* a login apply
+// requireAuth themselves (either at the router level, or per-route where a
+// router mixes public and login-required endpoints, like exams below).
+app.use(attachUser);
+
+app.use('/api/auth', require('./routes/auth'));
+
+// Public reference data (tax brackets, cost-of-living index) — used by the
+// Finance tools' calculators, not per-user, so never gated behind login.
+app.use('/api/states', require('./routes/states'));
+app.use('/api/federal', require('./routes/federal'));
+app.use('/api/tax-estimate', require('./routes/tax'));
+
+// exams.js applies requireAuth itself, per-route: browsing/taking exams
+// (including someone else's bundled ones) stays open, only uploading/
+// deleting requires login.
+app.use('/api/exams', require('./routes/exams'));
+
+// Per-user data — every route here requires login (no login, no server
+// round-trip at all; the frontend runs on a local-only default instead).
 app.use('/api/calendars', requireAuth, require('./routes/calendars'));
 app.use('/api/math-facts-profiles', requireAuth, require('./routes/mathFacts'));
 

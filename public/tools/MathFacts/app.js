@@ -3,10 +3,11 @@
 
   var C = window.MathFactsCore;
 
-  // Points at this browser's profile on the server — the profile's actual
-  // data (points/streak/badges/fact stats) lives server-side, same pattern
-  // as Life Goals Calendar's CALENDAR_ID_KEY.
-  var PROFILE_ID_KEY = "math-facts-profile-id";
+  // Pre-login, this pointed at an anonymous profile on the server; now that
+  // saving requires an account, it's kept only so a returning user's old
+  // anonymous progress can be claimed onto their new account once (see
+  // tryClaimLegacyAnonymousData below), then it's discarded.
+  var ANON_PROFILE_ID_KEY = "math-facts-profile-id";
 
   var DEFAULT_PROFILE = { totalPoints: 0, streak: { current: 0, longest: 0, lastPracticeDate: null }, badges: [], factStats: {}, sessionHistory: [] };
 
@@ -43,11 +44,15 @@
     if (mode === "saving") { statusDot.className = "tools-status-dot tools-status-dot--live"; statusRight.textContent = "saving…"; }
     else if (mode === "synced") { statusDot.className = "tools-status-dot tools-status-dot--ok"; statusRight.textContent = "synced"; }
     else if (mode === "save-error") { statusDot.className = "tools-status-dot"; statusRight.textContent = "save failed"; }
-    else if (mode === "load-error") { statusDot.className = "tools-status-dot"; statusRight.textContent = "practicing offline (no save)"; }
+    else if (mode === "load-error") { statusDot.className = "tools-status-dot"; statusRight.textContent = "load failed"; }
+    else if (mode === "guest") { statusDot.className = "tools-status-dot"; statusRight.textContent = "guest — log in to save"; }
     else { statusDot.className = "tools-status-dot"; statusRight.textContent = "idle"; }
   }
 
   // ---------- server-backed profile ----------
+  // Every route here requires login (see server/routes/mathFacts.js) — no
+  // login means no server round trip at all, just an in-memory profile
+  // (see loadForCurrentAuthState below).
   async function describeFailedResponse(res) {
     try {
       var body = await res.json();
@@ -56,42 +61,66 @@
     return res.status + " " + res.statusText;
   }
 
-  async function createProfile(initial) {
-    var res = await fetch("/api/math-facts-profiles", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(initial),
-    });
-    if (!res.ok) throw new Error("POST /api/math-facts-profiles failed: " + await describeFailedResponse(res));
+  async function fetchMyProfile() {
+    var res = await fetch("/api/math-facts-profiles/me");
+    if (!res.ok) throw new Error("GET /api/math-facts-profiles/me failed: " + await describeFailedResponse(res));
     return res.json();
   }
 
-  async function loadOwnProfile() {
-    var storedId = localStorage.getItem(PROFILE_ID_KEY);
-    if (storedId) {
-      try {
-        var res = await fetch("/api/math-facts-profiles/" + storedId);
-        if (res.ok) return res.json();
-        console.warn("GET /api/math-facts-profiles/" + storedId + " failed (" + res.status + ") — creating a new profile instead.");
-      } catch (e) {
-        console.warn("GET /api/math-facts-profiles/" + storedId + " threw — creating a new profile instead.", e);
-      }
+  // If this browser still has a pre-login anonymous profile id (from
+  // before accounts existed), try to attach it to the now-logged-in
+  // account once. Succeeds, is refused (409 — account already has real
+  // progress), or the guest record is simply gone (404): either way
+  // there's nothing more this key can do, so it's discarded after one
+  // attempt. A network hiccup leaves it in place to retry on the next load.
+  async function tryClaimLegacyAnonymousData() {
+    var anonId = localStorage.getItem(ANON_PROFILE_ID_KEY);
+    if (!anonId) return null;
+    try {
+      var res = await fetch("/api/math-facts-profiles/claim", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ anonymousId: anonId }),
+      });
+      localStorage.removeItem(ANON_PROFILE_ID_KEY);
+      return res.ok ? res.json() : null;
+    } catch (e) {
+      console.warn("Math Facts Practice: couldn't claim legacy guest data (will retry next load) —", e);
+      return null;
     }
-    var created = await createProfile(DEFAULT_PROFILE);
-    localStorage.setItem(PROFILE_ID_KEY, created.id);
-    return created;
   }
 
+  // Set right before a save-triggered login prompt, so the tools:auth-changed
+  // listener (which reloads from the server) doesn't race the save this
+  // same login was for — see onAuthChanged below.
+  var suppressNextAuthReload = false;
+
+  // Prompts to log in first if needed — this is the "modal before save"
+  // behavior for this tool, triggered once a practice session ends.
   async function saveProfileToServer(next) {
-    if (!next.id) { setStatus("load-error"); return; }
+    if (!window.ToolsAuth.getUser()) {
+      suppressNextAuthReload = true;
+      try {
+        await window.ToolsAuth.requireLogin("Log in to save your Math Facts progress");
+      } catch (e) {
+        suppressNextAuthReload = false;
+        return; // modal was cancelled — nothing to save
+      }
+      // Claimed here as a side effect (attaches any legacy guest data to
+      // the account); the PUT below always writes `next` — the session
+      // just played — right after, so it's never lost to whatever claim
+      // returns.
+      await tryClaimLegacyAnonymousData();
+    }
+
     setStatus("saving");
     try {
-      var res = await fetch("/api/math-facts-profiles/" + next.id, {
+      var res = await fetch("/api/math-facts-profiles/me", {
         method: "PUT", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           totalPoints: next.totalPoints, streak: next.streak, badges: next.badges,
           factStats: next.factStats, sessionHistory: next.sessionHistory,
         }),
       });
-      if (!res.ok) throw new Error("PUT /api/math-facts-profiles/" + next.id + " failed: " + await describeFailedResponse(res));
+      if (!res.ok) throw new Error("PUT /api/math-facts-profiles/me failed: " + await describeFailedResponse(res));
       setStatus("synced");
     } catch (e) {
       console.error("Math Facts Practice: save failed —", e);
@@ -557,18 +586,40 @@
   });
 
   // ---------- init ----------
-  async function init() {
-    document.getElementById("app").innerHTML = '<div class="mf-card"><div class="mf-empty">Loading…</div></div>';
+  // Logged in: load (and opportunistically claim legacy guest data into)
+  // this user's real profile. Logged out: skip the network entirely and
+  // run on a blank in-memory profile — nothing persists until they log in
+  // (saveProfileToServer prompts for that itself, at end of session).
+  async function loadForCurrentAuthState() {
+    if (!window.ToolsAuth.getUser()) {
+      profile = Object.assign({ id: null, userId: null }, JSON.parse(JSON.stringify(DEFAULT_PROFILE)));
+      setStatus("guest");
+      screen = "setup";
+      render();
+      return;
+    }
     try {
-      profile = await loadOwnProfile();
+      profile = (await tryClaimLegacyAnonymousData()) || (await fetchMyProfile());
       setStatus("synced");
     } catch (e) {
-      console.error("Math Facts Practice: couldn't load/create a profile —", e);
+      console.error("Math Facts Practice: couldn't load your profile —", e);
       profile = Object.assign({ id: null, userId: null }, JSON.parse(JSON.stringify(DEFAULT_PROFILE)));
       setStatus("load-error");
     }
     screen = "setup";
     render();
+  }
+
+  function onAuthChanged() {
+    if (suppressNextAuthReload) { suppressNextAuthReload = false; return; }
+    loadForCurrentAuthState();
+  }
+
+  async function init() {
+    document.getElementById("app").innerHTML = '<div class="mf-card"><div class="mf-empty">Loading…</div></div>';
+    await window.ToolsAuth.ready;
+    window.addEventListener("tools:auth-changed", onAuthChanged);
+    await loadForCurrentAuthState();
   }
 
   init();

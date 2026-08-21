@@ -6,7 +6,7 @@
 
   // ---------- state ----------
   const state = {
-    manifest: null,        // { exams: [{file, label, uploaded?}] }
+    manifest: null,        // { exams: [{file, label, source: "bundled"|"mine"}] }
     examCache: {},          // file -> parsed exam JSON (avoids refetching on select + start)
     examMeta: null,           // { file, label }
     exam: null,                 // full exam JSON currently loaded
@@ -116,27 +116,38 @@
     await loadManifest();
     populateExamSelect();
     renderUploadedList();
+
+    // Logging in/out (e.g. via the nav bar, not this page's own upload
+    // prompt) changes which uploads GET /api/exams returns — refresh so
+    // "Uploaded" reflects the current account without a page reload.
+    window.addEventListener("tools:auth-changed", async () => {
+      await loadManifest();
+      populateExamSelect();
+      renderUploadedList();
+    });
   }
 
   // Falls back to an empty exam list (rather than leaving state.manifest
   // null) so the rest of the UI can render normally and just show nothing
-  // selectable, instead of crashing on a null dereference.
+  // selectable, instead of crashing on a null dereference. Merges bundled
+  // (shared, always visible) and this user's own uploads (visible only
+  // when logged in — server/routes/exams.js filters that server-side).
   async function loadManifest() {
     try {
-      const res = await fetch("exams/manifest.json?t=" + Date.now());
-      if (!res.ok) throw new Error("manifest fetch failed: " + res.status);
+      const res = await fetch("/api/exams?t=" + Date.now());
+      if (!res.ok) throw new Error("exam list fetch failed: " + res.status);
       const manifest = await res.json();
       if (!manifest || !Array.isArray(manifest.exams)) {
-        throw new Error("manifest is missing an \"exams\" array");
+        throw new Error("response is missing an \"exams\" array");
       }
       state.manifest = manifest;
       return true;
     } catch (err) {
       state.manifest = { exams: [] };
       showGlobalError(
-        "Couldn't load the exam list (exams/manifest.json). " +
+        "Couldn't load the exam list. " +
           (err && err.message ? err.message : "Unknown error") +
-          " — check that the file exists and is valid JSON."
+          " — check that the server is running."
       );
       return false;
     }
@@ -151,8 +162,8 @@
     el.examSelect.appendChild(placeholder);
 
     const exams = (state.manifest && state.manifest.exams) || [];
-    const builtIn = exams.filter((e) => !e.uploaded);
-    const uploaded = exams.filter((e) => e.uploaded);
+    const builtIn = exams.filter((e) => e.source !== "mine");
+    const uploaded = exams.filter((e) => e.source === "mine");
 
     if (builtIn.length > 0) {
       const group = document.createElement("optgroup");
@@ -198,9 +209,16 @@
 
   // Caches by filename so switching the dropdown back and forth, or the
   // meta-preview-then-Start sequence, doesn't refetch the same exam twice.
+  // Bundled exams are still fetched from their static path (unchanged,
+  // public); a user's own upload is private, so it's served through the
+  // authenticated API instead — see server/routes/exams.js.
   async function getExamByFile(file) {
     if (state.examCache[file]) return state.examCache[file];
-    const res = await fetch("exams/" + file + "?t=" + Date.now());
+    const entry = ((state.manifest && state.manifest.exams) || []).find((e) => e.file === file);
+    const url = entry && entry.source === "mine"
+      ? "/api/exams/mine/" + encodeURIComponent(file) + "?t=" + Date.now()
+      : "exams/" + file + "?t=" + Date.now();
+    const res = await fetch(url);
     if (!res.ok) throw new Error("exam fetch failed: " + res.status);
     const exam = await res.json();
     const validation = validateExamSchema(exam);
@@ -396,6 +414,19 @@
       return;
     }
 
+    // Validation above is free and works while logged out; actually saving
+    // an upload is per-user, so this is where the login modal shows up if
+    // needed (see server/routes/exams.js — POST requires auth).
+    await window.ToolsAuth.ready;
+    if (!window.ToolsAuth.getUser()) {
+      try {
+        await window.ToolsAuth.requireLogin("Log in to upload a custom exam");
+      } catch (e) {
+        el.uploadInput.value = "";
+        return; // modal was cancelled
+      }
+    }
+
     el.uploadStatus.textContent = "Saving to server …";
     el.uploadStatus.hidden = false;
 
@@ -454,7 +485,7 @@
 
   function renderUploadedList() {
     el.uploadedList.innerHTML = "";
-    const uploaded = ((state.manifest && state.manifest.exams) || []).filter((e) => e.uploaded);
+    const uploaded = ((state.manifest && state.manifest.exams) || []).filter((e) => e.source === "mine");
     if (uploaded.length === 0) return;
 
     uploaded.forEach((u) => {
@@ -468,7 +499,7 @@
       name.textContent = u.label || u.file;
       const meta = document.createElement("div");
       meta.className = "exam-uploaded-row-meta";
-      meta.textContent = "exams/" + u.file;
+      meta.textContent = "your upload — " + u.file;
       info.appendChild(name);
       info.appendChild(meta);
 
