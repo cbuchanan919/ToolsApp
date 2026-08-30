@@ -227,7 +227,7 @@
     submitting = false;
     render();
     var input = document.getElementById("mf-answer-input");
-    if (input) { input.value = ""; input.disabled = false; input.focus(); }
+    if (input) { input.value = ""; input.disabled = false; input.focus({ preventScroll: true }); }
   }
 
   function startSession() {
@@ -244,6 +244,7 @@
     }
     screen = "practice";
     nextFact();
+    if (window.innerWidth <= 480) window.scrollTo(0, 0);
   }
 
   function tickTimer() {
@@ -289,13 +290,13 @@
     var input = document.getElementById("mf-answer-input");
     if (!input || input.disabled) return;
     input.value += digit;
-    input.focus();
+    input.focus({ preventScroll: true });
   }
   function keypadBackspace() {
     var input = document.getElementById("mf-answer-input");
     if (!input || input.disabled) return;
     input.value = input.value.slice(0, -1);
-    input.focus();
+    input.focus({ preventScroll: true });
   }
 
   function endSession() {
@@ -446,7 +447,7 @@
     var feedbackHtml = lastResult === "correct" ? '<div class="mf-feedback mf-feedback--correct">✓ Correct!</div>'
       : lastResult === "incorrect" ? '<div class="mf-feedback mf-feedback--incorrect">✗ Answer: ' + currentFact.answer + '</div>' : "";
 
-    var keypadHtml = ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(function (d) {
+    var keypadHtml = ['7', '8', '9', '4', '5', '6', '1', '2', '3'].map(function (d) {
       return '<button class="mf-key" data-action="keypad" data-digit="' + d + '">' + d + '</button>';
     }).join("") +
       '<button class="mf-key" data-action="keypad-backspace">⌫</button>' +
@@ -460,7 +461,7 @@
       '</div>' +
       '<div class="mf-fact-card ' + flashClass + '">' +
       '<div class="mf-fact">' + formatFactDisplay(currentFact) + ' = ?</div>' +
-      '<input type="tel" inputmode="numeric" autocomplete="off" id="mf-answer-input" class="mf-answer-input" placeholder="?" />' +
+      '<input type="tel" inputmode="none" autocomplete="off" readonly id="mf-answer-input" class="mf-answer-input" placeholder="?" />' +
       feedbackHtml +
       '</div>' +
       '<div class="mf-keypad">' + keypadHtml + '</div>';
@@ -581,8 +582,10 @@
   });
 
   document.getElementById("app").addEventListener("keydown", function (e) {
-    if (e.key !== "Enter") return;
-    if (e.target && e.target.id === "mf-answer-input") submitAnswer();
+    if (!e.target || e.target.id !== "mf-answer-input") return;
+    if (e.key === "Enter") { submitAnswer(); return; }
+    if (e.key === "Backspace") { e.preventDefault(); keypadBackspace(); return; }
+    if (/^[0-9]$/.test(e.key)) { e.preventDefault(); keypadPress(e.key); }
   });
 
   // ---------- init ----------
