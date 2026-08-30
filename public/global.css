@@ -3,9 +3,10 @@
    universal top nav bar, and the Tools landing page layout.
    ============================================================ */
 
-/* Dark is the default (bare :root, no media query) — this site is a manual
-   toggle, not a prefers-color-scheme follower. :root[data-theme="light"]
-   below overrides every token for the light variant. */
+/* Dark is the default (bare :root, no media query). theme-init.js sets
+   data-theme="light" on <html> before first paint — from a saved manual
+   toggle if one exists, else from prefers-color-scheme — and
+   :root[data-theme="light"] below overrides every token for that variant. */
 :root {
   --tools-bg: #12181f;
   --tools-panel: #19212b;

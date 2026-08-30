@@ -89,6 +89,29 @@
     btn.title = btn.getAttribute("aria-label");
   }
 
+  // If the user has never explicitly chosen a theme (no saved preference),
+  // keep following the OS setting live in case it changes while the tab is
+  // open. Once they use the toggle, setTheme() saves a preference and this
+  // stops applying.
+  try {
+    var mql = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)");
+    if (mql) {
+      mql.addEventListener("change", function (e) {
+        var saved = null;
+        try {
+          saved = localStorage.getItem(THEME_KEY);
+        } catch (err) {
+          /* ignore */
+        }
+        if (saved === "light" || saved === "dark") return;
+        document.documentElement.setAttribute("data-theme", e.matches ? "light" : "dark");
+        updateThemeToggleButton();
+      });
+    }
+  } catch (e) {
+    /* ignore (unsupported matchMedia) */
+  }
+
   function renderNav() {
     var root = document.getElementById("tools-nav-root");
     if (!root) return;
