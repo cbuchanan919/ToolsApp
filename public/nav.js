@@ -126,6 +126,7 @@
     root.innerHTML =
       '<nav class="tools-nav">' +
       '<a class="tools-nav-title" href="/">Tools</a>' +
+      '<span class="tools-nav-version" id="tools-nav-version"></span>' +
       '<button type="button" class="tools-nav-menu-toggle" id="tools-nav-menu-toggle" ' +
       'aria-label="Open menu" aria-expanded="false" aria-controls="tools-nav-menu">☰</button>' +
       '<div class="tools-nav-menu" id="tools-nav-menu">' +
@@ -139,6 +140,16 @@
     document.getElementById("tools-theme-toggle").addEventListener("click", function () {
       setTheme(getTheme() === "light" ? "dark" : "light");
     });
+
+    // Fire-and-forget: leave the element blank if this fails (offline,
+    // server down) rather than showing a stale or placeholder value.
+    fetch("/api/version")
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var el = document.getElementById("tools-nav-version");
+        if (el && data && data.version) el.textContent = "v" + data.version;
+      })
+      .catch(function () {});
 
     // ---------- responsive dropdown ----------
     // Below the CSS breakpoint, .tools-nav-menu is a hidden dropdown behind

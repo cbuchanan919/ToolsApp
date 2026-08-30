@@ -10,6 +10,7 @@ const { attachUser, requireAuth } = require('./middleware/auth');
 const BASE_DIR = path.join(__dirname, '..');
 const PUBLIC_DIR = path.join(BASE_DIR, 'public');
 const EXAMS_DIR = path.join(PUBLIC_DIR, 'tools', 'Exam', 'exams');
+const { version: SITE_VERSION } = require(path.join(BASE_DIR, 'package.json'));
 
 fs.mkdirSync(EXAMS_DIR, { recursive: true });
 
@@ -31,6 +32,12 @@ app.use((err, req, res, next) => {
 app.use(attachUser);
 
 app.use('/api/auth', require('./routes/auth'));
+
+// Displayed in the nav bar footer so it's obvious which deploy is live —
+// bumped automatically by the .git/hooks/pre-commit hook, not by hand.
+app.get('/api/version', (req, res) => {
+  res.json({ version: SITE_VERSION });
+});
 
 // Public reference data (tax brackets, cost-of-living index) — used by the
 // Finance tools' calculators, not per-user, so never gated behind login.

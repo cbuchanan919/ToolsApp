@@ -140,6 +140,12 @@ input:focus-visible,
   flex-shrink: 0;
 }
 
+.tools-nav-version {
+  font-size: 11px;
+  color: var(--tools-muted);
+  letter-spacing: 0.04em;
+}
+
 .tools-nav-links {
   display: flex;
   align-items: center;
